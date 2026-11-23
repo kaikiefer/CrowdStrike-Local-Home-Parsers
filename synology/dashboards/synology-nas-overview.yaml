@@ -1,0 +1,778 @@
+$schema: https://schemas.humio.com/dashboard/v0.24.0
+name: Synology NAS Overview
+description: DSM log activity, authentication, historical storage events, service/package changes and parser coverage. Requires
+  the Synology DSM parser; does not poll hardware metrics.
+updateFrequency: never
+sharedTimeInterval:
+  enabled: true
+  start: 1d
+labels:
+- Synology
+- NAS
+- DSM
+- CrowdStrike IOC
+parameters:
+  nas:
+    type: text
+    label: NAS hostname
+    defaultValue: '*'
+    order: 0
+    width: 2
+widgets:
+  scope:
+    type: note
+    title: Reading this dashboard
+    x: 0
+    y: 0
+    width: 12
+    height: 2
+    text: DSM log activity in the selected time range. Storage events are historical; they do not establish current disk health
+      or capacity. Authentication views also recognize exact supported historical login templates. Stored parser fields are
+      unchanged; review **Unmapped records** for coverage gaps.
+  events:
+    title: DSM records
+    description: Number of DSM log records in the selected period, excluding connection telemetry.
+    type: query
+    queryString: |-
+      #Vendor=synology #event.module=dsm
+      | observer.name = ?nas
+      | count(as=Records)
+    visualization: single-value
+    x: 0
+    y: 2
+    width: 3
+    height: 2
+    start: 1d
+    end: now
+    options: {}
+  nas-count:
+    title: NAS devices seen
+    description: Distinct syslog observer names, not current availability.
+    type: query
+    queryString: |-
+      #Vendor=synology #event.module=dsm
+      | observer.name = ?nas
+      | count(observer.name, distinct=true, as=Devices)
+    visualization: single-value
+    x: 3
+    y: 2
+    width: 3
+    height: 2
+    start: 1d
+    end: now
+    options: {}
+  login-failures:
+    title: Login failures
+    description: Failed-login records from ingest mappings or exact supported historical templates; records may not equal
+      distinct attempts.
+    type: query
+    queryString: |-
+      #Vendor=synology #event.module=dsm
+      | observer.name = ?nas
+      | Auth.action := event.action
+      | Auth.outcome := "not-reported"
+      | case { #event.outcome=* | Auth.outcome := #event.outcome; *; }
+      | Auth.user := user.name
+      | Auth.source := source.address
+      | Auth.service := service.name
+      | Auth.method := Vendor.Auth.method
+      | case {
+          Parser.status=parsed event.category[0]=authentication | Auth.mapping := "ingest";
+          Parser.status=envelope_only #event.dataset=dsm.connection
+              | case {
+                  message = /^User \[(?<Auth.user>[^\]]*)\] from \[(?<Auth.source>[^\]]+)\] failed to log in via \[(?<Auth.service>[^\]]+)\] due to (?<Auth.reason>.+)\.$/
+                      | Auth.action := "login" | Auth.outcome := "failure" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]*)\] failed to log in from \[(?<Auth.source>[^\]]+)\] via \[(?<Auth.service>[^\]]+)\]\.$/
+                      | Auth.action := "login" | Auth.outcome := "failure" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] from \[(?<Auth.source>[^\]]+)\] logged in successfully via \[(?<Auth.service>[^\]]+)\]\.$/
+                      | Auth.action := "login" | Auth.outcome := "success" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] from \[(?<Auth.source>[^\]]+)\] signed in to \[(?<Auth.service>[^\]]+)\] successfully via \[(?<Auth.method>[^\]]+)\]\.$/
+                      | Auth.action := "login" | Auth.outcome := "success" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] from \[(?<Auth.source>[^\]]+)\] has successfully passed the first authentication of 2FA via \[(?<Auth.method>[^\]]+)\]\.?$/
+                      | Auth.action := "authentication-first-factor" | Auth.outcome := "success" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] logged in from \[(?<Auth.source>[^\]]+)\]\.$/
+                      | Auth.action := "login" | Auth.outcome := "success" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] from \[(?<Auth.source>[^\]]+)\] logged out(?: via \[(?<Auth.service>[^\]]+)\])?\.$/
+                      | Auth.action := "logout" | Auth.outcome := "not-reported" | Auth.mapping := "historical exact template";
+                  *;
+              };
+          *;
+      }
+      | Auth.mapping=*
+      | Auth.action=login Auth.outcome=failure
+      | count(as=Failures)
+    visualization: single-value
+    x: 6
+    y: 2
+    width: 3
+    height: 2
+    start: 1d
+    end: now
+    options: {}
+  unmapped-count:
+    title: Unmapped records
+    description: Preserved records that need additional message mappings, including older parser versions.
+    type: query
+    queryString: |-
+      #Vendor=synology #event.module=dsm
+      | observer.name = ?nas
+      Parser.status!=parsed
+      | count(as=Records)
+    visualization: single-value
+    x: 9
+    y: 2
+    width: 3
+    height: 2
+    start: 1d
+    end: now
+    options: {}
+  activity-trend:
+    title: Activity over time
+    description: Counts by first ECS category; uncategorized records remain visible as Unmapped.
+    type: query
+    queryString: |-
+      #Vendor=synology #event.module=dsm
+      | observer.name = ?nas
+      | Category := "Unmapped"
+      | case { event.category[0]=* | Category := event.category[0]; *; }
+      | timeChart(Category, function=count(), limit=20)
+    visualization: time-chart
+    x: 0
+    y: 4
+    width: 8
+    height: 5
+    start: 1d
+    end: now
+    options:
+      connect-points: false
+      imputation: none
+      yAxisScale: linear
+  categories:
+    title: Activity by category
+    description: Each record is counted once using its first category.
+    type: query
+    queryString: |-
+      #Vendor=synology #event.module=dsm
+      | observer.name = ?nas
+      | Category := "Unmapped"
+      | case { event.category[0]=* | Category := event.category[0]; *; }
+      | groupBy(Category, function=count(), limit=100)
+    visualization: bar-chart
+    x: 8
+    y: 4
+    width: 4
+    height: 5
+    start: 1d
+    end: now
+    options:
+      inputDataFormat: long
+      legend: false
+      valuesOnBars: true
+      yAxisScale: linear
+  last-seen:
+    title: NAS last seen and parser coverage
+    description: Last event timestamp per NAS, parser version and status within the selected period; not an online/offline
+      check.
+    type: query
+    queryString: |-
+      #Vendor=synology #event.module=dsm
+      | observer.name = ?nas
+      | groupBy([observer.name, Parser.version, Parser.status], function=[count(as=Records), max(@timestamp, as=LastSeen)], limit=1000)
+      | sort(LastSeen, order=desc, limit=1000)
+      | formatTime("%Y-%m-%d %H:%M:%S %Z", field=LastSeen, as=LastSeen, timezone="UTC")
+    visualization: table
+    x: 0
+    y: 9
+    width: 12
+    height: 4
+    start: 1d
+    end: now
+    options: {}
+  auth-success:
+    title: Successful sign-ins
+    description: Successful login records; excludes first-factor events. Includes exact historical templates.
+    type: query
+    queryString: |-
+      #Vendor=synology #event.module=dsm
+      | observer.name = ?nas
+      | Auth.action := event.action
+      | Auth.outcome := "not-reported"
+      | case { #event.outcome=* | Auth.outcome := #event.outcome; *; }
+      | Auth.user := user.name
+      | Auth.source := source.address
+      | Auth.service := service.name
+      | Auth.method := Vendor.Auth.method
+      | case {
+          Parser.status=parsed event.category[0]=authentication | Auth.mapping := "ingest";
+          Parser.status=envelope_only #event.dataset=dsm.connection
+              | case {
+                  message = /^User \[(?<Auth.user>[^\]]*)\] from \[(?<Auth.source>[^\]]+)\] failed to log in via \[(?<Auth.service>[^\]]+)\] due to (?<Auth.reason>.+)\.$/
+                      | Auth.action := "login" | Auth.outcome := "failure" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]*)\] failed to log in from \[(?<Auth.source>[^\]]+)\] via \[(?<Auth.service>[^\]]+)\]\.$/
+                      | Auth.action := "login" | Auth.outcome := "failure" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] from \[(?<Auth.source>[^\]]+)\] logged in successfully via \[(?<Auth.service>[^\]]+)\]\.$/
+                      | Auth.action := "login" | Auth.outcome := "success" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] from \[(?<Auth.source>[^\]]+)\] signed in to \[(?<Auth.service>[^\]]+)\] successfully via \[(?<Auth.method>[^\]]+)\]\.$/
+                      | Auth.action := "login" | Auth.outcome := "success" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] from \[(?<Auth.source>[^\]]+)\] has successfully passed the first authentication of 2FA via \[(?<Auth.method>[^\]]+)\]\.?$/
+                      | Auth.action := "authentication-first-factor" | Auth.outcome := "success" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] logged in from \[(?<Auth.source>[^\]]+)\]\.$/
+                      | Auth.action := "login" | Auth.outcome := "success" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] from \[(?<Auth.source>[^\]]+)\] logged out(?: via \[(?<Auth.service>[^\]]+)\])?\.$/
+                      | Auth.action := "logout" | Auth.outcome := "not-reported" | Auth.mapping := "historical exact template";
+                  *;
+              };
+          *;
+      }
+      | Auth.mapping=*
+      | Auth.action=login Auth.outcome=success
+      | count(as=SignIns)
+    visualization: single-value
+    x: 0
+    y: 0
+    width: 6
+    height: 2
+    start: 1d
+    end: now
+    options: {}
+  auth-logout:
+    title: Recorded sign-outs
+    description: Only received, recognized logout records. Zero does not establish that no one signed out.
+    type: query
+    queryString: |-
+      #Vendor=synology #event.module=dsm
+      | observer.name = ?nas
+      | Auth.action := event.action
+      | Auth.outcome := "not-reported"
+      | case { #event.outcome=* | Auth.outcome := #event.outcome; *; }
+      | Auth.user := user.name
+      | Auth.source := source.address
+      | Auth.service := service.name
+      | Auth.method := Vendor.Auth.method
+      | case {
+          Parser.status=parsed event.category[0]=authentication | Auth.mapping := "ingest";
+          Parser.status=envelope_only #event.dataset=dsm.connection
+              | case {
+                  message = /^User \[(?<Auth.user>[^\]]*)\] from \[(?<Auth.source>[^\]]+)\] failed to log in via \[(?<Auth.service>[^\]]+)\] due to (?<Auth.reason>.+)\.$/
+                      | Auth.action := "login" | Auth.outcome := "failure" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]*)\] failed to log in from \[(?<Auth.source>[^\]]+)\] via \[(?<Auth.service>[^\]]+)\]\.$/
+                      | Auth.action := "login" | Auth.outcome := "failure" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] from \[(?<Auth.source>[^\]]+)\] logged in successfully via \[(?<Auth.service>[^\]]+)\]\.$/
+                      | Auth.action := "login" | Auth.outcome := "success" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] from \[(?<Auth.source>[^\]]+)\] signed in to \[(?<Auth.service>[^\]]+)\] successfully via \[(?<Auth.method>[^\]]+)\]\.$/
+                      | Auth.action := "login" | Auth.outcome := "success" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] from \[(?<Auth.source>[^\]]+)\] has successfully passed the first authentication of 2FA via \[(?<Auth.method>[^\]]+)\]\.?$/
+                      | Auth.action := "authentication-first-factor" | Auth.outcome := "success" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] logged in from \[(?<Auth.source>[^\]]+)\]\.$/
+                      | Auth.action := "login" | Auth.outcome := "success" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] from \[(?<Auth.source>[^\]]+)\] logged out(?: via \[(?<Auth.service>[^\]]+)\])?\.$/
+                      | Auth.action := "logout" | Auth.outcome := "not-reported" | Auth.mapping := "historical exact template";
+                  *;
+              };
+          *;
+      }
+      | Auth.mapping=*
+      | Auth.action=logout
+      | count(as=SignOuts)
+    visualization: single-value
+    x: 6
+    y: 0
+    width: 6
+    height: 2
+    start: 1d
+    end: now
+    options: {}
+  auth-trend:
+    title: Sign-in, sign-out and first-factor activity
+    description: Login, logout and first-factor records remain distinct. Logout outcome is not inferred.
+    type: query
+    queryString: |-
+      #Vendor=synology #event.module=dsm
+      | observer.name = ?nas
+      | Auth.action := event.action
+      | Auth.outcome := "not-reported"
+      | case { #event.outcome=* | Auth.outcome := #event.outcome; *; }
+      | Auth.user := user.name
+      | Auth.source := source.address
+      | Auth.service := service.name
+      | Auth.method := Vendor.Auth.method
+      | case {
+          Parser.status=parsed event.category[0]=authentication | Auth.mapping := "ingest";
+          Parser.status=envelope_only #event.dataset=dsm.connection
+              | case {
+                  message = /^User \[(?<Auth.user>[^\]]*)\] from \[(?<Auth.source>[^\]]+)\] failed to log in via \[(?<Auth.service>[^\]]+)\] due to (?<Auth.reason>.+)\.$/
+                      | Auth.action := "login" | Auth.outcome := "failure" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]*)\] failed to log in from \[(?<Auth.source>[^\]]+)\] via \[(?<Auth.service>[^\]]+)\]\.$/
+                      | Auth.action := "login" | Auth.outcome := "failure" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] from \[(?<Auth.source>[^\]]+)\] logged in successfully via \[(?<Auth.service>[^\]]+)\]\.$/
+                      | Auth.action := "login" | Auth.outcome := "success" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] from \[(?<Auth.source>[^\]]+)\] signed in to \[(?<Auth.service>[^\]]+)\] successfully via \[(?<Auth.method>[^\]]+)\]\.$/
+                      | Auth.action := "login" | Auth.outcome := "success" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] from \[(?<Auth.source>[^\]]+)\] has successfully passed the first authentication of 2FA via \[(?<Auth.method>[^\]]+)\]\.?$/
+                      | Auth.action := "authentication-first-factor" | Auth.outcome := "success" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] logged in from \[(?<Auth.source>[^\]]+)\]\.$/
+                      | Auth.action := "login" | Auth.outcome := "success" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] from \[(?<Auth.source>[^\]]+)\] logged out(?: via \[(?<Auth.service>[^\]]+)\])?\.$/
+                      | Auth.action := "logout" | Auth.outcome := "not-reported" | Auth.mapping := "historical exact template";
+                  *;
+              };
+          *;
+      }
+      | Auth.mapping=*
+      | format("%s (%s)", field=[Auth.action, Auth.outcome], as=Activity)
+      | timeChart(Activity, function=count(), limit=20)
+    visualization: time-chart
+    x: 0
+    y: 2
+    width: 6
+    height: 5
+    start: 1d
+    end: now
+    options:
+      connect-points: false
+      imputation: none
+      yAxisScale: linear
+  auth-sources:
+    title: Failed-login client addresses
+    description: Top 20 reported client addresses by failed-login record count, not necessarily distinct attempts.
+    type: query
+    queryString: |-
+      #Vendor=synology #event.module=dsm
+      | observer.name = ?nas
+      | Auth.action := event.action
+      | Auth.outcome := "not-reported"
+      | case { #event.outcome=* | Auth.outcome := #event.outcome; *; }
+      | Auth.user := user.name
+      | Auth.source := source.address
+      | Auth.service := service.name
+      | Auth.method := Vendor.Auth.method
+      | case {
+          Parser.status=parsed event.category[0]=authentication | Auth.mapping := "ingest";
+          Parser.status=envelope_only #event.dataset=dsm.connection
+              | case {
+                  message = /^User \[(?<Auth.user>[^\]]*)\] from \[(?<Auth.source>[^\]]+)\] failed to log in via \[(?<Auth.service>[^\]]+)\] due to (?<Auth.reason>.+)\.$/
+                      | Auth.action := "login" | Auth.outcome := "failure" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]*)\] failed to log in from \[(?<Auth.source>[^\]]+)\] via \[(?<Auth.service>[^\]]+)\]\.$/
+                      | Auth.action := "login" | Auth.outcome := "failure" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] from \[(?<Auth.source>[^\]]+)\] logged in successfully via \[(?<Auth.service>[^\]]+)\]\.$/
+                      | Auth.action := "login" | Auth.outcome := "success" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] from \[(?<Auth.source>[^\]]+)\] signed in to \[(?<Auth.service>[^\]]+)\] successfully via \[(?<Auth.method>[^\]]+)\]\.$/
+                      | Auth.action := "login" | Auth.outcome := "success" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] from \[(?<Auth.source>[^\]]+)\] has successfully passed the first authentication of 2FA via \[(?<Auth.method>[^\]]+)\]\.?$/
+                      | Auth.action := "authentication-first-factor" | Auth.outcome := "success" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] logged in from \[(?<Auth.source>[^\]]+)\]\.$/
+                      | Auth.action := "login" | Auth.outcome := "success" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] from \[(?<Auth.source>[^\]]+)\] logged out(?: via \[(?<Auth.service>[^\]]+)\])?\.$/
+                      | Auth.action := "logout" | Auth.outcome := "not-reported" | Auth.mapping := "historical exact template";
+                  *;
+              };
+          *;
+      }
+      | Auth.mapping=*
+      | Auth.action=login Auth.outcome=failure Auth.source=*
+      | groupBy(Auth.source, function=count(), limit=100)
+      | sort(_count, order=desc, limit=20)
+    visualization: bar-chart
+    x: 6
+    y: 2
+    width: 6
+    height: 5
+    start: 1d
+    end: now
+    options:
+      inputDataFormat: long
+      legend: false
+      valuesOnBars: true
+      yAxisScale: linear
+  auth-details:
+    title: Authentication details
+    description: Auth.mapping distinguishes ingest fields from exact historical templates. Stored parser version/status are
+      retained; first-factor success is not a completed login.
+    type: query
+    queryString: |-
+      #Vendor=synology #event.module=dsm
+      | observer.name = ?nas
+      | Auth.action := event.action
+      | Auth.outcome := "not-reported"
+      | case { #event.outcome=* | Auth.outcome := #event.outcome; *; }
+      | Auth.user := user.name
+      | Auth.source := source.address
+      | Auth.service := service.name
+      | Auth.method := Vendor.Auth.method
+      | case {
+          Parser.status=parsed event.category[0]=authentication | Auth.mapping := "ingest";
+          Parser.status=envelope_only #event.dataset=dsm.connection
+              | case {
+                  message = /^User \[(?<Auth.user>[^\]]*)\] from \[(?<Auth.source>[^\]]+)\] failed to log in via \[(?<Auth.service>[^\]]+)\] due to (?<Auth.reason>.+)\.$/
+                      | Auth.action := "login" | Auth.outcome := "failure" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]*)\] failed to log in from \[(?<Auth.source>[^\]]+)\] via \[(?<Auth.service>[^\]]+)\]\.$/
+                      | Auth.action := "login" | Auth.outcome := "failure" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] from \[(?<Auth.source>[^\]]+)\] logged in successfully via \[(?<Auth.service>[^\]]+)\]\.$/
+                      | Auth.action := "login" | Auth.outcome := "success" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] from \[(?<Auth.source>[^\]]+)\] signed in to \[(?<Auth.service>[^\]]+)\] successfully via \[(?<Auth.method>[^\]]+)\]\.$/
+                      | Auth.action := "login" | Auth.outcome := "success" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] from \[(?<Auth.source>[^\]]+)\] has successfully passed the first authentication of 2FA via \[(?<Auth.method>[^\]]+)\]\.?$/
+                      | Auth.action := "authentication-first-factor" | Auth.outcome := "success" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] logged in from \[(?<Auth.source>[^\]]+)\]\.$/
+                      | Auth.action := "login" | Auth.outcome := "success" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] from \[(?<Auth.source>[^\]]+)\] logged out(?: via \[(?<Auth.service>[^\]]+)\])?\.$/
+                      | Auth.action := "logout" | Auth.outcome := "not-reported" | Auth.mapping := "historical exact template";
+                  *;
+              };
+          *;
+      }
+      | Auth.mapping=*
+      | table([@timestamp, observer.name, Auth.action, Auth.outcome, Auth.user, Auth.source, Auth.method, Auth.mapping, Parser.version, Parser.status, message], limit=200)
+    visualization: table
+    x: 0
+    y: 7
+    width: 12
+    height: 5
+    start: 1d
+    end: now
+    options: {}
+  storage-events:
+    title: Storage events
+    description: Pool, volume, disk and scrub log events. No results means no matching records, not a healthy hardware assessment.
+    type: query
+    queryString: |-
+      #Vendor=synology #event.module=dsm
+      | observer.name = ?nas
+      #event.dataset=dsm.storage
+      | table([@timestamp, observer.name, event.action, log.level, message], limit=200)
+    visualization: table
+    x: 0
+    y: 0
+    width: 12
+    height: 5
+    start: 1d
+    end: now
+    options: {}
+  operational-warnings:
+    title: Warnings, errors and reported failures
+    description: Reported operational and security failures. Syslog severity is not threat severity.
+    type: query
+    queryString: |-
+      #Vendor=synology #event.module=dsm
+      | observer.name = ?nas
+      (log.level=/^(?:warning|error|critical|alert|emergency)$/ OR #event.outcome=failure)
+      | table([@timestamp, observer.name, log.level, event.action, message], limit=200)
+    visualization: table
+    x: 0
+    y: 5
+    width: 12
+    height: 5
+    start: 1d
+    end: now
+    options: {}
+  services-packages:
+    title: Service and package activity
+    description: Relevant package or service labels share an Activity column; generic update completion does not invent a
+      package name.
+    type: query
+    queryString: |-
+      #Vendor=synology #event.module=dsm
+      | observer.name = ?nas
+      Parser.status=parsed event.category[0]=/^(?:process|package)$/
+      | Activity := event.action
+      | case { package.name=* | Activity := package.name; service.name=* | Activity := service.name; *; }
+      | table([@timestamp, observer.name, event.action, Activity, message], limit=200)
+    visualization: table
+    x: 0
+    y: 10
+    width: 12
+    height: 5
+    start: 1d
+    end: now
+    options: {}
+  network:
+    title: Network activity
+    description: DDNS, link, DHCP and CMS messages. A CMS connection switch does not prove reconnection succeeded.
+    type: query
+    queryString: |-
+      #Vendor=synology #event.module=dsm
+      | observer.name = ?nas
+      Parser.status=parsed event.category[0]=network
+      | table([@timestamp, observer.name, event.action, message], limit=200)
+    visualization: table
+    x: 0
+    y: 15
+    width: 12
+    height: 5
+    start: 1d
+    end: now
+    options: {}
+  iam:
+    title: Account and permission changes
+    description: Acting and affected users are separate; some system/group changes legitimately omit one identity.
+    type: query
+    queryString: |-
+      #Vendor=synology #event.module=dsm
+      | observer.name = ?nas
+      Parser.status=parsed event.category[0]=iam
+      | table([@timestamp, observer.name, event.action, user.name, user.target.name, message], limit=200)
+    visualization: table
+    x: 0
+    y: 0
+    width: 12
+    height: 5
+    start: 1d
+    end: now
+    options: {}
+  files:
+    title: File activity over time
+    description: Logged file operations and share activity only; coverage depends on DSM service auditing.
+    type: query
+    queryString: |-
+      #Vendor=synology #event.module=dsm
+      | observer.name = ?nas
+      Parser.status=parsed event.category[0]=file
+      | timeChart(event.action, function=count(), limit=20)
+    visualization: time-chart
+    x: 0
+    y: 5
+    width: 6
+    height: 5
+    start: 1d
+    end: now
+    options:
+      connect-points: false
+      imputation: none
+      yAxisScale: linear
+  file-details:
+    title: File and share details
+    description: Original message retains paths or share labels. Read activity does not establish exfiltration.
+    type: query
+    queryString: |-
+      #Vendor=synology #event.module=dsm
+      | observer.name = ?nas
+      Parser.status=parsed event.category[0]=file
+      | table([@timestamp, observer.name, event.action, user.name, source.ip, message], limit=200)
+    visualization: table
+    x: 6
+    y: 5
+    width: 6
+    height: 5
+    start: 1d
+    end: now
+    options: {}
+  unmapped:
+    title: Unmapped record review
+    description: Review original raw records to extend mappings. Previously stored events are not retroactively reparsed.
+    type: query
+    queryString: |-
+      #Vendor=synology #event.module=dsm
+      | observer.name = ?nas
+      Parser.status!=parsed
+      | table([@timestamp, observer.name, Parser.version, Parser.status, message, @rawstring], limit=200)
+    visualization: table
+    x: 0
+    y: 0
+    width: 12
+    height: 5
+    start: 1d
+    end: now
+    options: {}
+  ioc-success:
+    title: Successful logins from IOC addresses
+    description: Completed login records matching high-confidence CrowdStrike IP indicators; excludes first-factor completion
+      and logout.
+    type: query
+    queryString: |-
+      #Vendor=synology #event.module=dsm
+      | observer.name = ?nas
+      | Auth.action := event.action
+      | Auth.outcome := "not-reported"
+      | case { #event.outcome=* | Auth.outcome := #event.outcome; *; }
+      | Auth.user := user.name
+      | Auth.source := source.address
+      | Auth.service := service.name
+      | Auth.method := Vendor.Auth.method
+      | case {
+          Parser.status=parsed event.category[0]=authentication | Auth.mapping := "ingest";
+          Parser.status=envelope_only #event.dataset=dsm.connection
+              | case {
+                  message = /^User \[(?<Auth.user>[^\]]*)\] from \[(?<Auth.source>[^\]]+)\] failed to log in via \[(?<Auth.service>[^\]]+)\] due to (?<Auth.reason>.+)\.$/
+                      | Auth.action := "login" | Auth.outcome := "failure" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]*)\] failed to log in from \[(?<Auth.source>[^\]]+)\] via \[(?<Auth.service>[^\]]+)\]\.$/
+                      | Auth.action := "login" | Auth.outcome := "failure" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] from \[(?<Auth.source>[^\]]+)\] logged in successfully via \[(?<Auth.service>[^\]]+)\]\.$/
+                      | Auth.action := "login" | Auth.outcome := "success" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] from \[(?<Auth.source>[^\]]+)\] signed in to \[(?<Auth.service>[^\]]+)\] successfully via \[(?<Auth.method>[^\]]+)\]\.$/
+                      | Auth.action := "login" | Auth.outcome := "success" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] from \[(?<Auth.source>[^\]]+)\] has successfully passed the first authentication of 2FA via \[(?<Auth.method>[^\]]+)\]\.?$/
+                      | Auth.action := "authentication-first-factor" | Auth.outcome := "success" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] logged in from \[(?<Auth.source>[^\]]+)\]\.$/
+                      | Auth.action := "login" | Auth.outcome := "success" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] from \[(?<Auth.source>[^\]]+)\] logged out(?: via \[(?<Auth.service>[^\]]+)\])?\.$/
+                      | Auth.action := "logout" | Auth.outcome := "not-reported" | Auth.mapping := "historical exact template";
+                  *;
+              };
+          *;
+      }
+      | Auth.mapping=*
+      | Auth.action=login
+      | cidr(Auth.source, subnet=["0.0.0.0/0", "::/0"])
+      | ioc:lookup(field=Auth.source, type="ip_address", confidenceThreshold="high", strict=true)
+      | Auth.outcome=success
+      | count(as=SignIns)
+    visualization: single-value
+    x: 0
+    y: 0
+    width: 6
+    height: 2
+    start: 1d
+    end: now
+    options: {}
+  ioc-failure:
+    title: Failed logins from IOC addresses
+    description: Failed login records matching high-confidence CrowdStrike IP indicators. Matches warrant investigation, not
+      a compromise verdict.
+    type: query
+    queryString: |-
+      #Vendor=synology #event.module=dsm
+      | observer.name = ?nas
+      | Auth.action := event.action
+      | Auth.outcome := "not-reported"
+      | case { #event.outcome=* | Auth.outcome := #event.outcome; *; }
+      | Auth.user := user.name
+      | Auth.source := source.address
+      | Auth.service := service.name
+      | Auth.method := Vendor.Auth.method
+      | case {
+          Parser.status=parsed event.category[0]=authentication | Auth.mapping := "ingest";
+          Parser.status=envelope_only #event.dataset=dsm.connection
+              | case {
+                  message = /^User \[(?<Auth.user>[^\]]*)\] from \[(?<Auth.source>[^\]]+)\] failed to log in via \[(?<Auth.service>[^\]]+)\] due to (?<Auth.reason>.+)\.$/
+                      | Auth.action := "login" | Auth.outcome := "failure" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]*)\] failed to log in from \[(?<Auth.source>[^\]]+)\] via \[(?<Auth.service>[^\]]+)\]\.$/
+                      | Auth.action := "login" | Auth.outcome := "failure" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] from \[(?<Auth.source>[^\]]+)\] logged in successfully via \[(?<Auth.service>[^\]]+)\]\.$/
+                      | Auth.action := "login" | Auth.outcome := "success" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] from \[(?<Auth.source>[^\]]+)\] signed in to \[(?<Auth.service>[^\]]+)\] successfully via \[(?<Auth.method>[^\]]+)\]\.$/
+                      | Auth.action := "login" | Auth.outcome := "success" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] from \[(?<Auth.source>[^\]]+)\] has successfully passed the first authentication of 2FA via \[(?<Auth.method>[^\]]+)\]\.?$/
+                      | Auth.action := "authentication-first-factor" | Auth.outcome := "success" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] logged in from \[(?<Auth.source>[^\]]+)\]\.$/
+                      | Auth.action := "login" | Auth.outcome := "success" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] from \[(?<Auth.source>[^\]]+)\] logged out(?: via \[(?<Auth.service>[^\]]+)\])?\.$/
+                      | Auth.action := "logout" | Auth.outcome := "not-reported" | Auth.mapping := "historical exact template";
+                  *;
+              };
+          *;
+      }
+      | Auth.mapping=*
+      | Auth.action=login
+      | cidr(Auth.source, subnet=["0.0.0.0/0", "::/0"])
+      | ioc:lookup(field=Auth.source, type="ip_address", confidenceThreshold="high", strict=true)
+      | Auth.outcome=failure
+      | count(as=Failures)
+    visualization: single-value
+    x: 6
+    y: 0
+    width: 6
+    height: 2
+    start: 1d
+    end: now
+    options: {}
+  ioc-details:
+    title: Login IOC match details
+    description: Reported client IP, account, outcome, confidence and intelligence labels; one row per indicator match. Current
+      intelligence applied at search time.
+    type: query
+    queryString: |-
+      #Vendor=synology #event.module=dsm
+      | observer.name = ?nas
+      | Auth.action := event.action
+      | Auth.outcome := "not-reported"
+      | case { #event.outcome=* | Auth.outcome := #event.outcome; *; }
+      | Auth.user := user.name
+      | Auth.source := source.address
+      | Auth.service := service.name
+      | Auth.method := Vendor.Auth.method
+      | case {
+          Parser.status=parsed event.category[0]=authentication | Auth.mapping := "ingest";
+          Parser.status=envelope_only #event.dataset=dsm.connection
+              | case {
+                  message = /^User \[(?<Auth.user>[^\]]*)\] from \[(?<Auth.source>[^\]]+)\] failed to log in via \[(?<Auth.service>[^\]]+)\] due to (?<Auth.reason>.+)\.$/
+                      | Auth.action := "login" | Auth.outcome := "failure" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]*)\] failed to log in from \[(?<Auth.source>[^\]]+)\] via \[(?<Auth.service>[^\]]+)\]\.$/
+                      | Auth.action := "login" | Auth.outcome := "failure" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] from \[(?<Auth.source>[^\]]+)\] logged in successfully via \[(?<Auth.service>[^\]]+)\]\.$/
+                      | Auth.action := "login" | Auth.outcome := "success" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] from \[(?<Auth.source>[^\]]+)\] signed in to \[(?<Auth.service>[^\]]+)\] successfully via \[(?<Auth.method>[^\]]+)\]\.$/
+                      | Auth.action := "login" | Auth.outcome := "success" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] from \[(?<Auth.source>[^\]]+)\] has successfully passed the first authentication of 2FA via \[(?<Auth.method>[^\]]+)\]\.?$/
+                      | Auth.action := "authentication-first-factor" | Auth.outcome := "success" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] logged in from \[(?<Auth.source>[^\]]+)\]\.$/
+                      | Auth.action := "login" | Auth.outcome := "success" | Auth.mapping := "historical exact template";
+                  message = /^User \[(?<Auth.user>[^\]]+)\] from \[(?<Auth.source>[^\]]+)\] logged out(?: via \[(?<Auth.service>[^\]]+)\])?\.$/
+                      | Auth.action := "logout" | Auth.outcome := "not-reported" | Auth.mapping := "historical exact template";
+                  *;
+              };
+          *;
+      }
+      | Auth.mapping=*
+      | Auth.action=login
+      | cidr(Auth.source, subnet=["0.0.0.0/0", "::/0"])
+      | ioc:lookup(field=Auth.source, type="ip_address", confidenceThreshold="high", strict=true)
+      | split(ioc)
+      | sort(@timestamp, order=desc, limit=200)
+      | table([@timestamp, observer.name, Auth.user, Auth.source, Auth.outcome, Auth.mapping, ioc.indicator, ioc.malicious_confidence, ioc.labels], limit=200)
+    visualization: table
+    x: 0
+    y: 2
+    width: 12
+    height: 6
+    start: 1d
+    end: now
+    options: {}
+sections:
+  overview:
+    title: Overview
+    order: 0
+    widgetIds:
+    - scope
+    - events
+    - nas-count
+    - login-failures
+    - unmapped-count
+    - activity-trend
+    - categories
+    - last-seen
+  authentication:
+    title: Authentication
+    order: 1
+    widgetIds:
+    - auth-success
+    - auth-logout
+    - auth-trend
+    - auth-sources
+    - auth-details
+  ioc:
+    title: CrowdStrike IOC matches
+    order: 2
+    widgetIds:
+    - ioc-success
+    - ioc-failure
+    - ioc-details
+  operations:
+    title: Storage and operations
+    order: 3
+    widgetIds:
+    - storage-events
+    - operational-warnings
+    - services-packages
+    - network
+  administration:
+    title: Administration and file activity
+    order: 4
+    widgetIds:
+    - iam
+    - files
+    - file-details
+  coverage:
+    title: Parser coverage
+    order: 5
+    widgetIds:
+    - unmapped

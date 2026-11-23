@@ -1,0 +1,1163 @@
+[
+  {
+    "id": "bsd-auth-failure",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "<12>Feb  3 10:25:00 nas-demo.example Connection SYSTEM: User [demo-user] from [198.51.100.51] failed to log in via [DSM] due to authorization failure.",
+    "fields": {
+      "event.dataset": "dsm.connection",
+      "event.action": "login",
+      "event.outcome": "failure",
+      "event.category[0]": "authentication",
+      "event.type[0]": "start",
+      "user.name": "demo-user",
+      "source.address": "198.51.100.51",
+      "source.ip": "198.51.100.51",
+      "service.name": "DSM",
+      "event.reason": "authorization failure",
+      "Vendor.Template": "auth_failure_reason",
+      "host.name": "nas-demo.example",
+      "host.hostname": "nas-demo.example",
+      "observer.name": "nas-demo.example",
+      "log.syslog.priority": "12",
+      "log.syslog.severity.code": "4",
+      "log.level": "warning",
+      "Vendor.Log.actor": "SYSTEM",
+      "Vendor.Message": "SYSTEM: User [demo-user] from [198.51.100.51] failed to log in via [DSM] due to authorization failure.",
+      "Parser.timestamp_source": "syslog_local"
+    },
+    "absent": [
+      "destination.ip",
+      "event.severity"
+    ],
+    "extraction": {
+      "Vendor.User.name": "demo-user",
+      "Vendor.Client.address": "198.51.100.51",
+      "Vendor.Service.name": "DSM",
+      "Vendor.Auth.reason": "authorization failure"
+    }
+  },
+  {
+    "id": "bsd-single-digit-day",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "<14>Nov  3 10:25:00 nas-demo.example Connection: User [demo-user] from [198.51.100.51] failed to log in via [DSM] due to authorization failure.",
+    "fields": {
+      "event.dataset": "dsm.connection",
+      "event.action": "login",
+      "event.outcome": "failure",
+      "event.category[0]": "authentication",
+      "event.type[0]": "start",
+      "user.name": "demo-user",
+      "source.address": "198.51.100.51",
+      "source.ip": "198.51.100.51",
+      "service.name": "DSM",
+      "event.reason": "authorization failure",
+      "Vendor.Template": "auth_failure_reason",
+      "log.level": "info",
+      "Vendor.Syslog.localtime": "Nov  3 10:25:00"
+    },
+    "absent": [],
+    "extraction": {
+      "Vendor.User.name": "demo-user",
+      "Vendor.Client.address": "198.51.100.51",
+      "Vendor.Service.name": "DSM",
+      "Vendor.Auth.reason": "authorization failure"
+    }
+  },
+  {
+    "id": "ietf-auth-failure",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "<12>1 2025-02-03T18:25:00.123Z nas-demo.example Connection 123 AUTH - SYSTEM: User [demo-user] from [198.51.100.51] failed to log in via [DSM] due to authorization failure.",
+    "fields": {
+      "event.dataset": "dsm.connection",
+      "event.action": "login",
+      "event.outcome": "failure",
+      "event.category[0]": "authentication",
+      "event.type[0]": "start",
+      "user.name": "demo-user",
+      "source.address": "198.51.100.51",
+      "source.ip": "198.51.100.51",
+      "service.name": "DSM",
+      "event.reason": "authorization failure",
+      "Vendor.Template": "auth_failure_reason",
+      "Vendor.Syslog.appname": "Connection",
+      "Vendor.Syslog.procid": "123",
+      "Vendor.Syslog.msgid": "AUTH",
+      "Vendor.Syslog.structured_data": "-",
+      "Parser.timestamp_source": "syslog_iso"
+    },
+    "absent": [],
+    "extraction": {
+      "Vendor.User.name": "demo-user",
+      "Vendor.Client.address": "198.51.100.51",
+      "Vendor.Service.name": "DSM",
+      "Vendor.Auth.reason": "authorization failure"
+    }
+  },
+  {
+    "id": "ietf-structured-data",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "<12>1 2025-02-03T18:25:00Z nas-demo.example Connection - - [meta@32473 note=\"escaped \\] bracket\" id=\"1\"][extra@32473 x=\"a\\\\b\"] SYSTEM: User [demo-user] from [198.51.100.51] failed to log in via [DSM] due to authorization failure.",
+    "fields": {
+      "event.dataset": "dsm.connection",
+      "event.action": "login",
+      "event.outcome": "failure",
+      "event.category[0]": "authentication",
+      "event.type[0]": "start",
+      "user.name": "demo-user",
+      "source.address": "198.51.100.51",
+      "source.ip": "198.51.100.51",
+      "service.name": "DSM",
+      "event.reason": "authorization failure",
+      "Vendor.Template": "auth_failure_reason",
+      "Vendor.Syslog.structured_data": "[meta@32473 note=\"escaped \\] bracket\" id=\"1\"][extra@32473 x=\"a\\\\b\"]"
+    },
+    "absent": [],
+    "extraction": {
+      "Vendor.User.name": "demo-user",
+      "Vendor.Client.address": "198.51.100.51",
+      "Vendor.Service.name": "DSM",
+      "Vendor.Auth.reason": "authorization failure"
+    }
+  },
+  {
+    "id": "relay-iso-time",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "Feb  3 10:25:00 2025-02-03T18:25:00Z nas-demo.example Connection SYSTEM: User [demo-user] from [198.51.100.51] failed to log in via [DSM] due to authorization failure.",
+    "fields": {
+      "event.dataset": "dsm.connection",
+      "event.action": "login",
+      "event.outcome": "failure",
+      "event.category[0]": "authentication",
+      "event.type[0]": "start",
+      "user.name": "demo-user",
+      "source.address": "198.51.100.51",
+      "source.ip": "198.51.100.51",
+      "service.name": "DSM",
+      "event.reason": "authorization failure",
+      "Vendor.Template": "auth_failure_reason",
+      "Parser.timestamp_source": "syslog_iso"
+    },
+    "absent": [],
+    "extraction": {
+      "Vendor.User.name": "demo-user",
+      "Vendor.Client.address": "198.51.100.51",
+      "Vendor.Service.name": "DSM",
+      "Vendor.Auth.reason": "authorization failure"
+    }
+  },
+  {
+    "id": "iso-envelope",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "<12>2025-02-03T18:25:00+00:00 nas-demo.example Connection SYSTEM: User [demo-user] from [198.51.100.51] failed to log in via [DSM] due to authorization failure.",
+    "fields": {
+      "event.dataset": "dsm.connection",
+      "event.action": "login",
+      "event.outcome": "failure",
+      "event.category[0]": "authentication",
+      "event.type[0]": "start",
+      "user.name": "demo-user",
+      "source.address": "198.51.100.51",
+      "source.ip": "198.51.100.51",
+      "service.name": "DSM",
+      "event.reason": "authorization failure",
+      "Vendor.Template": "auth_failure_reason",
+      "Parser.timestamp_source": "syslog_iso"
+    },
+    "absent": [],
+    "extraction": {
+      "Vendor.User.name": "demo-user",
+      "Vendor.Client.address": "198.51.100.51",
+      "Vendor.Service.name": "DSM",
+      "Vendor.Auth.reason": "authorization failure"
+    }
+  },
+  {
+    "id": "generic-program",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "Feb  3 10:25:00 nas-demo.example synologd[123]: User [demo-user] from [198.51.100.51] failed to log in via [DSM] due to authorization failure.",
+    "fields": {
+      "event.dataset": "dsm.connection",
+      "event.action": "login",
+      "event.outcome": "failure",
+      "event.category[0]": "authentication",
+      "event.type[0]": "start",
+      "user.name": "demo-user",
+      "source.address": "198.51.100.51",
+      "source.ip": "198.51.100.51",
+      "service.name": "DSM",
+      "event.reason": "authorization failure",
+      "Vendor.Template": "auth_failure_reason",
+      "Vendor.Syslog.appname": "synologd",
+      "Vendor.Syslog.procid": "123"
+    },
+    "absent": [],
+    "extraction": {
+      "Vendor.User.name": "demo-user",
+      "Vendor.Client.address": "198.51.100.51",
+      "Vendor.Service.name": "DSM",
+      "Vendor.Auth.reason": "authorization failure"
+    }
+  },
+  {
+    "id": "known-program-pid",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "Feb  3 10:25:00 nas-demo.example Connection[123]: SYSTEM: User [demo-user] from [198.51.100.51] failed to log in via [DSM] due to authorization failure.",
+    "fields": {
+      "event.dataset": "dsm.connection",
+      "event.action": "login",
+      "event.outcome": "failure",
+      "event.category[0]": "authentication",
+      "event.type[0]": "start",
+      "user.name": "demo-user",
+      "source.address": "198.51.100.51",
+      "source.ip": "198.51.100.51",
+      "service.name": "DSM",
+      "event.reason": "authorization failure",
+      "Vendor.Template": "auth_failure_reason",
+      "Vendor.Log.pid": "123"
+    },
+    "absent": [],
+    "extraction": {
+      "Vendor.User.name": "demo-user",
+      "Vendor.Client.address": "198.51.100.51",
+      "Vendor.Service.name": "DSM",
+      "Vendor.Auth.reason": "authorization failure"
+    }
+  },
+  {
+    "id": "bare-connection",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "Connection SYSTEM: User [demo-user] from [198.51.100.51] failed to log in via [DSM] due to authorization failure.",
+    "fields": {
+      "event.dataset": "dsm.connection",
+      "event.action": "login",
+      "event.outcome": "failure",
+      "event.category[0]": "authentication",
+      "event.type[0]": "start",
+      "user.name": "demo-user",
+      "source.address": "198.51.100.51",
+      "source.ip": "198.51.100.51",
+      "service.name": "DSM",
+      "event.reason": "authorization failure",
+      "Vendor.Template": "auth_failure_reason",
+      "Parser.timestamp_source": "collector"
+    },
+    "absent": [
+      "host.name",
+      "host.hostname",
+      "observer.name"
+    ],
+    "extraction": {
+      "Vendor.User.name": "demo-user",
+      "Vendor.Client.address": "198.51.100.51",
+      "Vendor.Service.name": "DSM",
+      "Vendor.Auth.reason": "authorization failure"
+    }
+  },
+  {
+    "id": "bare-message",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "User [demo-user] from [198.51.100.51] failed to log in via [DSM] due to authorization failure.",
+    "fields": {
+      "event.dataset": "dsm.connection",
+      "event.action": "login",
+      "event.outcome": "failure",
+      "event.category[0]": "authentication",
+      "event.type[0]": "start",
+      "user.name": "demo-user",
+      "source.address": "198.51.100.51",
+      "source.ip": "198.51.100.51",
+      "service.name": "DSM",
+      "event.reason": "authorization failure",
+      "Vendor.Template": "auth_failure_reason",
+      "Parser.timestamp_source": "collector"
+    },
+    "absent": [
+      "host.name",
+      "Vendor.Log.type"
+    ],
+    "extraction": {
+      "Vendor.User.name": "demo-user",
+      "Vendor.Client.address": "198.51.100.51",
+      "Vendor.Service.name": "DSM",
+      "Vendor.Auth.reason": "authorization failure"
+    }
+  },
+  {
+    "id": "ipv6-ssh-failure",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "Connection SYSTEM: User [demo-user] from [2001:DB8::10] failed to log in via [SSH] due to authorization failure.",
+    "fields": {
+      "event.dataset": "dsm.connection",
+      "event.outcome": "failure",
+      "source.address": "2001:db8:42::10",
+      "source.ip": "2001:db8:42::10",
+      "network.protocol": "ssh",
+      "user.name": "demo-user",
+      "event.category[0]": "authentication"
+    },
+    "absent": [],
+    "extraction": {
+      "Vendor.User.name": "demo-user",
+      "Vendor.Client.address": "2001:DB8::10",
+      "Vendor.Service.name": "SSH",
+      "Vendor.Auth.reason": "authorization failure"
+    }
+  },
+  {
+    "id": "domain-user-failure",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "Connection SYSTEM: User [EXAMPLE\\demo-user] from [198.51.100.51] failed to log in via [DSM] due to authorization failure.",
+    "fields": {
+      "event.dataset": "dsm.connection",
+      "event.action": "login",
+      "event.outcome": "failure",
+      "event.category[0]": "authentication",
+      "event.type[0]": "start",
+      "user.name": "EXAMPLE\\demo-user",
+      "source.address": "198.51.100.51",
+      "source.ip": "198.51.100.51",
+      "service.name": "DSM",
+      "event.reason": "authorization failure",
+      "Vendor.Template": "auth_failure_reason"
+    },
+    "absent": [],
+    "extraction": {
+      "Vendor.User.name": "EXAMPLE\\demo-user",
+      "Vendor.Client.address": "198.51.100.51",
+      "Vendor.Service.name": "DSM",
+      "Vendor.Auth.reason": "authorization failure"
+    }
+  },
+  {
+    "id": "hostname-client",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "Connection SYSTEM: User [demo-user] from [client01.example] failed to log in via [DSM] due to authorization failure.",
+    "fields": {
+      "source.address": "client01",
+      "user.name": "demo-user",
+      "event.outcome": "failure",
+      "event.category[0]": "authentication"
+    },
+    "absent": [
+      "source.ip"
+    ],
+    "extraction": {
+      "Vendor.User.name": "demo-user",
+      "Vendor.Client.address": "client01.example",
+      "Vendor.Service.name": "DSM",
+      "Vendor.Auth.reason": "authorization failure"
+    }
+  },
+  {
+    "id": "invalid-ip-client",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "Connection SYSTEM: User [demo-user] from [999.1.2.3] failed to log in via [DSM] due to authorization failure.",
+    "fields": {
+      "source.address": "999.1.2.3",
+      "event.outcome": "failure",
+      "event.category[0]": "authentication"
+    },
+    "absent": [
+      "source.ip"
+    ],
+    "extraction": {
+      "Vendor.User.name": "demo-user",
+      "Vendor.Client.address": "999.1.2.3",
+      "Vendor.Service.name": "DSM",
+      "Vendor.Auth.reason": "authorization failure"
+    }
+  },
+  {
+    "id": "empty-user",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "Connection SYSTEM: User [] from [198.51.100.51] failed to log in via [DSM] due to authorization failure.",
+    "fields": {
+      "event.outcome": "failure",
+      "Vendor.User.name": "",
+      "source.ip": "198.51.100.51",
+      "event.category[0]": "authentication"
+    },
+    "absent": [
+      "user.name"
+    ],
+    "extraction": {
+      "Vendor.User.name": "",
+      "Vendor.Client.address": "198.51.100.51",
+      "Vendor.Service.name": "DSM",
+      "Vendor.Auth.reason": "authorization failure"
+    }
+  },
+  {
+    "id": "legacy-failure",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "Connection SYSTEM: User [demo-user] failed to log in from [198.51.100.51] via [DSM].",
+    "fields": {
+      "event.action": "login",
+      "event.outcome": "failure",
+      "source.ip": "198.51.100.51",
+      "user.name": "demo-user",
+      "Vendor.Template": "auth_failure_legacy",
+      "event.category[0]": "authentication"
+    },
+    "absent": [
+      "event.reason"
+    ],
+    "extraction": {
+      "Vendor.User.name": "demo-user",
+      "Vendor.Client.address": "198.51.100.51",
+      "Vendor.Service.name": "DSM"
+    }
+  },
+  {
+    "id": "smb-denied-reason",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "Connection SYSTEM: User [demo-user] from [198.51.100.51] failed to log in via [SMB] due to [NTLMv1 not permitted].",
+    "fields": {
+      "network.protocol": "smb",
+      "event.reason": "[NTLMv1 not permitted]",
+      "event.outcome": "failure",
+      "event.category[0]": "authentication"
+    },
+    "absent": [],
+    "extraction": {
+      "Vendor.User.name": "demo-user",
+      "Vendor.Client.address": "198.51.100.51",
+      "Vendor.Service.name": "SMB",
+      "Vendor.Auth.reason": "[NTLMv1 not permitted]"
+    }
+  },
+  {
+    "id": "login-success",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "Connection demo-user: User [demo-user] from [198.51.100.51] logged in successfully via [DSM].",
+    "fields": {
+      "event.action": "login",
+      "event.outcome": "success",
+      "event.category[0]": "authentication",
+      "event.type[0]": "start",
+      "user.name": "demo-user",
+      "source.ip": "198.51.100.51",
+      "Vendor.Template": "auth_success"
+    },
+    "absent": [],
+    "extraction": {
+      "Vendor.User.name": "demo-user",
+      "Vendor.Client.address": "198.51.100.51",
+      "Vendor.Service.name": "DSM"
+    }
+  },
+  {
+    "id": "legacy-login-success",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "System SYSTEM: User [demo-user] logged in from [198.51.100.51].",
+    "fields": {
+      "event.dataset": "dsm.connection",
+      "event.outcome": "success",
+      "event.action": "login",
+      "user.name": "demo-user",
+      "source.ip": "198.51.100.51",
+      "Vendor.Template": "auth_success_legacy",
+      "event.category[0]": "authentication"
+    },
+    "absent": [],
+    "extraction": {
+      "Vendor.User.name": "demo-user",
+      "Vendor.Client.address": "198.51.100.51"
+    }
+  },
+  {
+    "id": "logout",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "Connection demo-user: User [demo-user] from [198.51.100.51] logged out via [DSM].",
+    "fields": {
+      "event.action": "logout",
+      "event.type[0]": "end",
+      "user.name": "demo-user",
+      "Vendor.Template": "auth_logout",
+      "event.category[0]": "authentication"
+    },
+    "absent": [
+      "event.outcome"
+    ],
+    "extraction": {
+      "Vendor.User.name": "demo-user",
+      "Vendor.Client.address": "198.51.100.51",
+      "Vendor.Service.name": "DSM"
+    }
+  },
+  {
+    "id": "logout-no-service",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "Connection demo-user: User [demo-user] from [198.51.100.51] logged out.",
+    "fields": {
+      "event.action": "logout",
+      "event.type[0]": "end",
+      "Vendor.Template": "auth_logout",
+      "event.category[0]": "authentication"
+    },
+    "absent": [
+      "service.name",
+      "event.outcome"
+    ],
+    "extraction": {
+      "Vendor.User.name": "demo-user",
+      "Vendor.Client.address": "198.51.100.51"
+    }
+  },
+  {
+    "id": "share-access",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "Connection demo-user: User [demo-user] from [198.51.100.51] via [CIFS(SMB3)] accessed shared folder [demo-share].",
+    "fields": {
+      "event.action": "share-access",
+      "event.category[0]": "file",
+      "event.type[0]": "access",
+      "network.protocol": "smb",
+      "Vendor.Share.name": "demo-share",
+      "Vendor.Template": "share_access"
+    },
+    "absent": [
+      "file.path",
+      "event.outcome"
+    ],
+    "extraction": {
+      "Vendor.User.name": "demo-user",
+      "Vendor.Client.address": "198.51.100.51",
+      "Vendor.Service.name": "CIFS(SMB3)",
+      "Vendor.Share.name": "demo-share"
+    }
+  },
+  {
+    "id": "legacy-cifs-share",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "Connection EXAMPLE\\demo-user:\tCIFS client [EXAMPLE\\demo-user] from [CLIENT01.EXAMPLE(IP:198.51.100.51)] accessed the shared folder [demo-share].",
+    "fields": {
+      "event.action": "share-access",
+      "user.name": "EXAMPLE\\demo-user",
+      "source.ip": "198.51.100.51",
+      "Vendor.Client.hostname": "CLIENT01.EXAMPLE",
+      "network.protocol": "smb",
+      "Vendor.Template": "share_access_cifs",
+      "event.category[0]": "file"
+    },
+    "absent": [
+      "file.path",
+      "event.outcome"
+    ],
+    "extraction": {
+      "Vendor.User.name": "EXAMPLE\\demo-user",
+      "Vendor.Client.hostname": "CLIENT01.EXAMPLE",
+      "Vendor.Client.address": "198.51.100.51",
+      "Vendor.Share.name": "demo-share"
+    }
+  },
+  {
+    "id": "file-create",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "<14>Feb  3 10:25:00 nas-demo.example WinFileService Event: create, Path: /demo-share/Sample, draft.txt, File/Folder: File, Size: 123 Bytes, User: EXAMPLE\\Demo User, IP: 198.51.100.51",
+    "fields": {
+      "event.dataset": "dsm.file",
+      "event.action": "create",
+      "event.category[0]": "file",
+      "event.type[0]": "creation",
+      "file.path": "/demo-share/Sample, draft.txt",
+      "file.type": "file",
+      "file.size": "123",
+      "user.name": "EXAMPLE\\Demo User",
+      "source.ip": "198.51.100.51",
+      "network.protocol": "smb",
+      "Vendor.Template": "file_operation"
+    },
+    "absent": [
+      "event.outcome"
+    ],
+    "extraction": {
+      "Vendor.File.operation": "create",
+      "Vendor.File.path": "/demo-share/Sample, draft.txt",
+      "Vendor.File.kind": "File",
+      "Vendor.File.size": "123 Bytes",
+      "Vendor.User.name": "EXAMPLE\\Demo User",
+      "Vendor.Client.address": "198.51.100.51"
+    }
+  },
+  {
+    "id": "file-read",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "<14>Feb  3 10:25:00 nas-demo.example WinFileService Event: read, Path: /demo-share/Sample, draft.txt, File/Folder: File, Size: 123 Bytes, User: EXAMPLE\\Demo User, IP: 198.51.100.51",
+    "fields": {
+      "event.dataset": "dsm.file",
+      "event.action": "read",
+      "event.category[0]": "file",
+      "event.type[0]": "access",
+      "file.path": "/demo-share/Sample, draft.txt",
+      "file.type": "file",
+      "file.size": "123",
+      "user.name": "EXAMPLE\\Demo User",
+      "source.ip": "198.51.100.51",
+      "network.protocol": "smb",
+      "Vendor.Template": "file_operation"
+    },
+    "absent": [
+      "event.outcome"
+    ],
+    "extraction": {
+      "Vendor.File.operation": "read",
+      "Vendor.File.path": "/demo-share/Sample, draft.txt",
+      "Vendor.File.kind": "File",
+      "Vendor.File.size": "123 Bytes",
+      "Vendor.User.name": "EXAMPLE\\Demo User",
+      "Vendor.Client.address": "198.51.100.51"
+    }
+  },
+  {
+    "id": "file-write",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "<14>Feb  3 10:25:00 nas-demo.example WinFileService Event: write, Path: /demo-share/Sample, draft.txt, File/Folder: File, Size: 123 Bytes, User: EXAMPLE\\Demo User, IP: 198.51.100.51",
+    "fields": {
+      "event.dataset": "dsm.file",
+      "event.action": "write",
+      "event.category[0]": "file",
+      "event.type[0]": "change",
+      "file.path": "/demo-share/Sample, draft.txt",
+      "file.type": "file",
+      "file.size": "123",
+      "user.name": "EXAMPLE\\Demo User",
+      "source.ip": "198.51.100.51",
+      "network.protocol": "smb",
+      "Vendor.Template": "file_operation"
+    },
+    "absent": [
+      "event.outcome"
+    ],
+    "extraction": {
+      "Vendor.File.operation": "write",
+      "Vendor.File.path": "/demo-share/Sample, draft.txt",
+      "Vendor.File.kind": "File",
+      "Vendor.File.size": "123 Bytes",
+      "Vendor.User.name": "EXAMPLE\\Demo User",
+      "Vendor.Client.address": "198.51.100.51"
+    }
+  },
+  {
+    "id": "file-delete",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "<14>Feb  3 10:25:00 nas-demo.example WinFileService Event: delete, Path: /demo-share/Sample, draft.txt, File/Folder: File, Size: 123 Bytes, User: EXAMPLE\\Demo User, IP: 198.51.100.51",
+    "fields": {
+      "event.dataset": "dsm.file",
+      "event.action": "delete",
+      "event.category[0]": "file",
+      "event.type[0]": "deletion",
+      "file.path": "/demo-share/Sample, draft.txt",
+      "file.type": "file",
+      "file.size": "123",
+      "user.name": "EXAMPLE\\Demo User",
+      "source.ip": "198.51.100.51",
+      "network.protocol": "smb",
+      "Vendor.Template": "file_operation"
+    },
+    "absent": [
+      "event.outcome"
+    ],
+    "extraction": {
+      "Vendor.File.operation": "delete",
+      "Vendor.File.path": "/demo-share/Sample, draft.txt",
+      "Vendor.File.kind": "File",
+      "Vendor.File.size": "123 Bytes",
+      "Vendor.User.name": "EXAMPLE\\Demo User",
+      "Vendor.Client.address": "198.51.100.51"
+    }
+  },
+  {
+    "id": "file-rename",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "<14>Feb  3 10:25:00 nas-demo.example WinFileService Event: rename, Path: /demo-share/Sample, draft.txt, File/Folder: File, Size: 123 Bytes, User: EXAMPLE\\Demo User, IP: 198.51.100.51",
+    "fields": {
+      "event.dataset": "dsm.file",
+      "event.action": "rename",
+      "event.category[0]": "file",
+      "event.type[0]": "change",
+      "file.path": "/demo-share/Sample, draft.txt",
+      "file.type": "file",
+      "file.size": "123",
+      "user.name": "EXAMPLE\\Demo User",
+      "source.ip": "198.51.100.51",
+      "network.protocol": "smb",
+      "Vendor.Template": "file_operation"
+    },
+    "absent": [
+      "event.outcome"
+    ],
+    "extraction": {
+      "Vendor.File.operation": "rename",
+      "Vendor.File.path": "/demo-share/Sample, draft.txt",
+      "Vendor.File.kind": "File",
+      "Vendor.File.size": "123 Bytes",
+      "Vendor.User.name": "EXAMPLE\\Demo User",
+      "Vendor.Client.address": "198.51.100.51"
+    }
+  },
+  {
+    "id": "file-move",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "<14>Feb  3 10:25:00 nas-demo.example WinFileService Event: move, Path: /demo-share/Sample, draft.txt, File/Folder: File, Size: 123 Bytes, User: EXAMPLE\\Demo User, IP: 198.51.100.51",
+    "fields": {
+      "event.dataset": "dsm.file",
+      "event.action": "move",
+      "event.category[0]": "file",
+      "event.type[0]": "change",
+      "file.path": "/demo-share/Sample, draft.txt",
+      "file.type": "file",
+      "file.size": "123",
+      "user.name": "EXAMPLE\\Demo User",
+      "source.ip": "198.51.100.51",
+      "network.protocol": "smb",
+      "Vendor.Template": "file_operation"
+    },
+    "absent": [
+      "event.outcome"
+    ],
+    "extraction": {
+      "Vendor.File.operation": "move",
+      "Vendor.File.path": "/demo-share/Sample, draft.txt",
+      "Vendor.File.kind": "File",
+      "Vendor.File.size": "123 Bytes",
+      "Vendor.User.name": "EXAMPLE\\Demo User",
+      "Vendor.Client.address": "198.51.100.51"
+    }
+  },
+  {
+    "id": "file-download",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "<14>Feb  3 10:25:00 nas-demo.example WinFileService Event: download, Path: /demo-share/Sample, draft.txt, File/Folder: File, Size: 123 Bytes, User: EXAMPLE\\Demo User, IP: 198.51.100.51",
+    "fields": {
+      "event.dataset": "dsm.file",
+      "event.action": "download",
+      "event.category[0]": "file",
+      "event.type[0]": "access",
+      "file.path": "/demo-share/Sample, draft.txt",
+      "file.type": "file",
+      "file.size": "123",
+      "user.name": "EXAMPLE\\Demo User",
+      "source.ip": "198.51.100.51",
+      "network.protocol": "smb",
+      "Vendor.Template": "file_operation"
+    },
+    "absent": [
+      "event.outcome"
+    ],
+    "extraction": {
+      "Vendor.File.operation": "download",
+      "Vendor.File.path": "/demo-share/Sample, draft.txt",
+      "Vendor.File.kind": "File",
+      "Vendor.File.size": "123 Bytes",
+      "Vendor.User.name": "EXAMPLE\\Demo User",
+      "Vendor.Client.address": "198.51.100.51"
+    }
+  },
+  {
+    "id": "file-archive",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "<14>Feb  3 10:25:00 nas-demo.example WinFileService Event: archive, Path: /demo-share/Sample, draft.txt, File/Folder: File, Size: 123 Bytes, User: EXAMPLE\\Demo User, IP: 198.51.100.51",
+    "fields": {
+      "event.dataset": "dsm.file",
+      "event.action": "archive",
+      "event.category[0]": "file",
+      "event.type[0]": "info",
+      "file.path": "/demo-share/Sample, draft.txt",
+      "file.type": "file",
+      "file.size": "123",
+      "user.name": "EXAMPLE\\Demo User",
+      "source.ip": "198.51.100.51",
+      "network.protocol": "smb",
+      "Vendor.Template": "file_operation"
+    },
+    "absent": [
+      "event.outcome"
+    ],
+    "extraction": {
+      "Vendor.File.operation": "archive",
+      "Vendor.File.path": "/demo-share/Sample, draft.txt",
+      "Vendor.File.kind": "File",
+      "Vendor.File.size": "123 Bytes",
+      "Vendor.User.name": "EXAMPLE\\Demo User",
+      "Vendor.Client.address": "198.51.100.51"
+    }
+  },
+  {
+    "id": "file-human-size",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "WinFileService Event: read, Path: /demo-share/example.pdf, File/Folder: File, Size: 1.23 GB, User: demo-user, IP: 198.51.100.51",
+    "fields": {
+      "event.action": "read",
+      "Vendor.File.size": "1.23 GB",
+      "file.path": "/demo-share/example.pdf",
+      "event.category[0]": "file"
+    },
+    "absent": [
+      "file.size",
+      "event.outcome"
+    ],
+    "extraction": {
+      "Vendor.File.operation": "read",
+      "Vendor.File.path": "/demo-share/example.pdf",
+      "Vendor.File.kind": "File",
+      "Vendor.File.size": "1.23 GB",
+      "Vendor.User.name": "demo-user",
+      "Vendor.Client.address": "198.51.100.51"
+    }
+  },
+  {
+    "id": "folder-delete",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "FileStation Event: delete, Path: /demo-share/archive, File/Folder: Folder, Size: NA, User: demo-user, IP: 198.51.100.51",
+    "fields": {
+      "event.action": "delete",
+      "file.type": "directory",
+      "Vendor.File.size": "NA",
+      "event.category[0]": "file"
+    },
+    "absent": [
+      "file.size",
+      "network.protocol"
+    ],
+    "extraction": {
+      "Vendor.File.operation": "delete",
+      "Vendor.File.path": "/demo-share/archive",
+      "Vendor.File.kind": "Folder",
+      "Vendor.File.size": "NA",
+      "Vendor.User.name": "demo-user",
+      "Vendor.Client.address": "198.51.100.51"
+    }
+  },
+  {
+    "id": "syslog-test",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "System Test message from Synology Syslog Client from (198.51.100.52)",
+    "fields": {
+      "event.action": "syslog-test",
+      "event.dataset": "dsm.system",
+      "event.category[0]": "configuration",
+      "event.type[0]": "info",
+      "Vendor.Template": "syslog_test"
+    },
+    "absent": [
+      "source.ip",
+      "source.address",
+      "user.name"
+    ],
+    "extraction": {}
+  },
+  {
+    "id": "storage-message",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "StorageManager SYSTEM: Storage pool [1] is degraded.",
+    "fields": {
+      "Parser.status": "envelope_only",
+      "event.dataset": "dsm.storage",
+      "event.type[0]": "info"
+    },
+    "absent": [
+      "user.name",
+      "source.ip",
+      "event.outcome",
+      "event.category[0]",
+      "event.action",
+      "file.path"
+    ]
+  },
+  {
+    "id": "backup-message",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "Backup SYSTEM: Backup task [daily] failed.",
+    "fields": {
+      "Parser.status": "envelope_only",
+      "event.dataset": "dsm.backup",
+      "event.type[0]": "info"
+    },
+    "absent": [
+      "user.name",
+      "source.ip",
+      "event.outcome",
+      "event.category[0]",
+      "event.action",
+      "file.path"
+    ]
+  },
+  {
+    "id": "system-message",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "System SYSTEM: Windows file service was started.",
+    "fields": {
+      "Parser.status": "envelope_only",
+      "event.dataset": "dsm.system",
+      "event.type[0]": "info"
+    },
+    "absent": [
+      "user.name",
+      "source.ip",
+      "event.outcome",
+      "event.category[0]",
+      "event.action",
+      "file.path"
+    ]
+  },
+  {
+    "id": "localized-message",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "Connection SYSTEM: Benutzeranmeldung fehlgeschlagen.",
+    "fields": {
+      "Parser.status": "envelope_only",
+      "event.dataset": "dsm.connection",
+      "event.type[0]": "info"
+    },
+    "absent": [
+      "user.name",
+      "source.ip",
+      "event.outcome",
+      "event.category[0]",
+      "event.action",
+      "file.path"
+    ]
+  },
+  {
+    "id": "truncated-file",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "WinFileService Event: delete, Path: /demo-share/incomplete",
+    "fields": {
+      "Parser.status": "envelope_only",
+      "event.dataset": "dsm.file",
+      "event.type[0]": "info"
+    },
+    "absent": [
+      "user.name",
+      "source.ip",
+      "event.outcome",
+      "event.category[0]",
+      "event.action",
+      "file.path"
+    ]
+  },
+  {
+    "id": "embedded-auth",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "System SYSTEM: Diagnostic text: User [demo-user] from [198.51.100.51] failed to log in via [DSM] due to authorization failure.",
+    "fields": {
+      "Parser.status": "envelope_only",
+      "event.dataset": "dsm.system",
+      "event.type[0]": "info"
+    },
+    "absent": [
+      "user.name",
+      "source.ip",
+      "event.outcome",
+      "event.category[0]",
+      "event.action",
+      "file.path"
+    ]
+  },
+  {
+    "id": "unknown-input",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "not a recognized log",
+    "fields": {
+      "Parser.status": "unsupported_format",
+      "event.dataset": "dsm.unknown",
+      "message": "not a recognized log"
+    },
+    "absent": [
+      "event.category[0]",
+      "event.outcome",
+      "source.ip"
+    ]
+  },
+  {
+    "id": "ietf-nil-values",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "<14>1 - - - - - -",
+    "fields": {
+      "Parser.status": "envelope_only",
+      "message": "",
+      "Parser.timestamp_source": "collector",
+      "log.level": "info"
+    },
+    "absent": [
+      "host.name",
+      "observer.name",
+      "host.hostname",
+      "user.name",
+      "source.ip"
+    ]
+  },
+  {
+    "id": "ietf-empty-message",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "<14>1 2025-02-03T18:25:00Z nas-demo.example System - - -",
+    "fields": {
+      "Parser.status": "envelope_only",
+      "message": "",
+      "Parser.timestamp_source": "syslog_iso",
+      "event.dataset": "dsm.system"
+    },
+    "absent": [
+      "event.outcome",
+      "user.name"
+    ]
+  },
+  {
+    "id": "bad-iso-falls-back-to-local",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "Feb  3 10:25:00 2026-99-99T99:99:99Z nas-demo.example Connection SYSTEM: User [demo-user] from [198.51.100.51] failed to log in via [DSM] due to authorization failure.",
+    "fields": {
+      "event.dataset": "dsm.connection",
+      "event.action": "login",
+      "event.outcome": "failure",
+      "event.category[0]": "authentication",
+      "event.type[0]": "start",
+      "user.name": "demo-user",
+      "source.address": "198.51.100.51",
+      "source.ip": "198.51.100.51",
+      "service.name": "DSM",
+      "event.reason": "authorization failure",
+      "Vendor.Template": "auth_failure_reason",
+      "Parser.timestamp_source": "syslog_local"
+    },
+    "absent": [],
+    "extraction": {
+      "Vendor.User.name": "demo-user",
+      "Vendor.Client.address": "198.51.100.51",
+      "Vendor.Service.name": "DSM",
+      "Vendor.Auth.reason": "authorization failure"
+    }
+  },
+  {
+    "id": "bad-iso-collector-fallback",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "<12>1 not-a-date nas-demo.example Connection - - - SYSTEM: User [demo-user] from [198.51.100.51] failed to log in via [DSM] due to authorization failure.",
+    "fields": {
+      "event.dataset": "dsm.connection",
+      "event.action": "login",
+      "event.outcome": "failure",
+      "event.category[0]": "authentication",
+      "event.type[0]": "start",
+      "user.name": "demo-user",
+      "source.address": "198.51.100.51",
+      "source.ip": "198.51.100.51",
+      "service.name": "DSM",
+      "event.reason": "authorization failure",
+      "Vendor.Template": "auth_failure_reason",
+      "Parser.timestamp_source": "collector"
+    },
+    "absent": [],
+    "extraction": {
+      "Vendor.User.name": "demo-user",
+      "Vendor.Client.address": "198.51.100.51",
+      "Vendor.Service.name": "DSM",
+      "Vendor.Auth.reason": "authorization failure"
+    }
+  },
+  {
+    "id": "invalid-priority",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "<999>1 2025-02-03T18:25:00Z nas-demo.example Connection - - - SYSTEM: User [demo-user] from [198.51.100.51] failed to log in via [DSM] due to authorization failure.",
+    "fields": {
+      "event.dataset": "dsm.connection",
+      "event.action": "login",
+      "event.outcome": "failure",
+      "event.category[0]": "authentication",
+      "event.type[0]": "start",
+      "user.name": "demo-user",
+      "source.address": "198.51.100.51",
+      "source.ip": "198.51.100.51",
+      "service.name": "DSM",
+      "event.reason": "authorization failure",
+      "Vendor.Template": "auth_failure_reason"
+    },
+    "absent": [
+      "log.syslog.priority",
+      "log.syslog.severity.code",
+      "log.level"
+    ],
+    "extraction": {
+      "Vendor.User.name": "demo-user",
+      "Vendor.Client.address": "198.51.100.51",
+      "Vendor.Service.name": "DSM",
+      "Vendor.Auth.reason": "authorization failure"
+    }
+  },
+  {
+    "id": "ip-nas-host",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "<12>1 2025-02-03T18:25:00Z 198.51.100.52 Connection - - - SYSTEM: User [demo-user] from [198.51.100.51] failed to log in via [DSM] due to authorization failure.",
+    "fields": {
+      "event.dataset": "dsm.connection",
+      "event.action": "login",
+      "event.outcome": "failure",
+      "event.category[0]": "authentication",
+      "event.type[0]": "start",
+      "user.name": "demo-user",
+      "source.address": "198.51.100.51",
+      "source.ip": "198.51.100.51",
+      "service.name": "DSM",
+      "event.reason": "authorization failure",
+      "Vendor.Template": "auth_failure_reason",
+      "host.ip[0]": "198.51.100.52",
+      "host.name": "198.51.100.52"
+    },
+    "absent": [
+      "host.hostname",
+      "destination.ip"
+    ],
+    "extraction": {
+      "Vendor.User.name": "demo-user",
+      "Vendor.Client.address": "198.51.100.51",
+      "Vendor.Service.name": "DSM",
+      "Vendor.Auth.reason": "authorization failure"
+    }
+  },
+  {
+    "id": "priority-0",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "<0>1 2025-02-03T18:25:00Z nas-demo.example System - - - Health status message.",
+    "fields": {
+      "Parser.status": "envelope_only",
+      "log.syslog.priority": "0",
+      "log.syslog.severity.code": "0",
+      "log.level": "emergency"
+    },
+    "absent": [
+      "event.severity",
+      "event.outcome"
+    ]
+  },
+  {
+    "id": "priority-191",
+    "provenance": "Release synthetic fixture; derived only from an independently synthetic template, never from captured or adapted user records.",
+    "raw": "<191>1 2025-02-03T18:25:00Z nas-demo.example System - - - Health status message.",
+    "fields": {
+      "Parser.status": "envelope_only",
+      "log.syslog.priority": "191",
+      "log.syslog.severity.code": "7",
+      "log.level": "debug"
+    },
+    "absent": [
+      "event.severity",
+      "event.outcome"
+    ]
+  },
+  {
+    "id": "synthetic-account-create",
+    "raw": "System demo-operator: User [demo-test-account] was created.",
+    "fields": {
+      "Vendor.Template": "system_account_state",
+      "Vendor.TargetUser.name": "demo-test-account",
+      "Vendor.TargetUser.operation": "created",
+      "event.category[0]": "iam",
+      "event.type[0]": "user",
+      "event.type[1]": "creation",
+      "event.action": "user-create"
+    },
+    "absent": [],
+    "provenance": "New synthetic account-administration regression; no captured event."
+  }
+]

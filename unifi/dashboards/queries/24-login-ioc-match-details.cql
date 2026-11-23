@@ -1,0 +1,3 @@
+#Vendor=ubiquiti #event.module=unifi
+event.category[0]=authentication Parser.status=parsed Vendor.Cef.name=/(?i)(?:login failed|failed login|failed to log in|authentication failed|admin access failed|admin accessed|logged in|login successful)/ Vendor.Cef.name!=/(?i)(?:logged out|logout)/ source.ip=*
+| ioc:lookup(field=source.ip, type="ip_address", confidenceThreshold="high", strict=true) | split(ioc) | sort(@timestamp, order=desc, limit=200) | table([@timestamp, observer.name, user.name, source.ip, #event.outcome, Vendor.Cef.name, ioc.indicator, ioc.malicious_confidence, ioc.labels], limit=200)

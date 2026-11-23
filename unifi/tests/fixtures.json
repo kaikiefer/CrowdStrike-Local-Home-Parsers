@@ -1,0 +1,434 @@
+[
+  {
+    "id": "bare",
+    "raw": "CEF:0|Ubiquiti|UniFi Network|1.0.0|admin|Admin Accessed|3|src=192.0.2.10 suser=example-admin UNIFIhost=gateway.example",
+    "fields": {
+      "event.dataset": "unifi.network",
+      "observer.product": "UniFi Network",
+      "observer.name": "gateway.example",
+      "user.name": "example-admin",
+      "source.ip": "192.0.2.10"
+    },
+    "absent": [],
+    "provenance": "Entirely generated synthetic release fixture; no captured user event.",
+    "envelope": {
+      "_payload": "CEF:0|Ubiquiti|UniFi Network|1.0.0|admin|Admin Accessed|3|src=192.0.2.10 suser=example-admin UNIFIhost=gateway.example"
+    }
+  },
+  {
+    "id": "priority",
+    "raw": "<134>CEF:0|Ubiquiti|UniFi Network|1.0.0|admin|Admin Accessed|3|src=192.0.2.10 suser=example-admin UNIFIhost=gateway.example",
+    "fields": {
+      "event.dataset": "unifi.network",
+      "observer.product": "UniFi Network",
+      "observer.name": "gateway.example",
+      "user.name": "example-admin",
+      "source.ip": "192.0.2.10"
+    },
+    "absent": [],
+    "provenance": "Entirely generated synthetic release fixture; no captured user event.",
+    "envelope": {
+      "Vendor.Syslog.priority": "134",
+      "_payload": "CEF:0|Ubiquiti|UniFi Network|1.0.0|admin|Admin Accessed|3|src=192.0.2.10 suser=example-admin UNIFIhost=gateway.example"
+    }
+  },
+  {
+    "id": "rfc3164",
+    "raw": "<134>Jan  2 03:04:05 relay.example CEF:0|Ubiquiti|UniFi Network|1.0.0|admin|Admin Accessed|3|src=192.0.2.10 suser=example-admin UNIFIhost=gateway.example",
+    "fields": {
+      "event.dataset": "unifi.network",
+      "observer.product": "UniFi Network",
+      "observer.name": "gateway.example",
+      "user.name": "example-admin",
+      "source.ip": "192.0.2.10"
+    },
+    "absent": [],
+    "provenance": "Entirely generated synthetic release fixture; no captured user event.",
+    "envelope": {
+      "Vendor.Syslog.hostname": "relay.example",
+      "Vendor.Syslog.localtime": "Jan  2 03:04:05",
+      "_payload": "CEF:0|Ubiquiti|UniFi Network|1.0.0|admin|Admin Accessed|3|src=192.0.2.10 suser=example-admin UNIFIhost=gateway.example"
+    }
+  },
+  {
+    "id": "rfc3164-program",
+    "raw": "<134>Jan  2 03:04:05 relay.example app: CEF:0|Ubiquiti|UniFi Network|1.0.0|admin|Admin Accessed|3|src=192.0.2.10 suser=example-admin UNIFIhost=gateway.example",
+    "fields": {
+      "event.dataset": "unifi.network",
+      "observer.product": "UniFi Network",
+      "observer.name": "gateway.example",
+      "user.name": "example-admin",
+      "source.ip": "192.0.2.10"
+    },
+    "absent": [],
+    "provenance": "Entirely generated synthetic release fixture; no captured user event.",
+    "envelope": {
+      "Vendor.Syslog.hostname": "relay.example",
+      "_payload": "CEF:0|Ubiquiti|UniFi Network|1.0.0|admin|Admin Accessed|3|src=192.0.2.10 suser=example-admin UNIFIhost=gateway.example"
+    }
+  },
+  {
+    "id": "rfc3164-site",
+    "raw": "<134>Jan  2 03:04:05 relay.example Example Site: CEF:0|Ubiquiti|UniFi Network|1.0.0|admin|Admin Accessed|3|src=192.0.2.10 suser=example-admin UNIFIhost=gateway.example",
+    "fields": {
+      "event.dataset": "unifi.network",
+      "observer.product": "UniFi Network",
+      "observer.name": "gateway.example",
+      "user.name": "example-admin",
+      "source.ip": "192.0.2.10"
+    },
+    "absent": [],
+    "provenance": "Entirely generated synthetic release fixture; no captured user event.",
+    "envelope": {
+      "Vendor.Syslog.hostname": "relay.example",
+      "_payload": "CEF:0|Ubiquiti|UniFi Network|1.0.0|admin|Admin Accessed|3|src=192.0.2.10 suser=example-admin UNIFIhost=gateway.example"
+    }
+  },
+  {
+    "id": "rfc5424",
+    "raw": "<134>1 2025-01-02T03:04:05Z relay.example app 123 ID1 - CEF:0|Ubiquiti|UniFi Network|1.0.0|admin|Admin Accessed|3|src=192.0.2.10 suser=example-admin UNIFIhost=gateway.example",
+    "fields": {
+      "event.dataset": "unifi.network",
+      "observer.product": "UniFi Network",
+      "observer.name": "gateway.example",
+      "user.name": "example-admin",
+      "source.ip": "192.0.2.10"
+    },
+    "absent": [],
+    "provenance": "Entirely generated synthetic release fixture; no captured user event.",
+    "envelope": {
+      "Vendor.Syslog.hostname": "relay.example",
+      "Vendor.Syslog.appname": "app",
+      "_payload": "CEF:0|Ubiquiti|UniFi Network|1.0.0|admin|Admin Accessed|3|src=192.0.2.10 suser=example-admin UNIFIhost=gateway.example"
+    }
+  },
+  {
+    "id": "rfc5424-structured",
+    "raw": "<134>1 2025-01-02T03:04:05Z relay.example app 123 ID1 [example@123 key=\"sample\"] CEF:0|Ubiquiti|UniFi Network|1.0.0|admin|Admin Accessed|3|src=192.0.2.10 suser=example-admin UNIFIhost=gateway.example",
+    "fields": {
+      "event.dataset": "unifi.network",
+      "observer.product": "UniFi Network",
+      "observer.name": "gateway.example",
+      "user.name": "example-admin",
+      "source.ip": "192.0.2.10"
+    },
+    "absent": [],
+    "provenance": "Entirely generated synthetic release fixture; no captured user event.",
+    "envelope": {
+      "Vendor.Syslog.hostname": "relay.example",
+      "_payload": "CEF:0|Ubiquiti|UniFi Network|1.0.0|admin|Admin Accessed|3|src=192.0.2.10 suser=example-admin UNIFIhost=gateway.example"
+    }
+  },
+  {
+    "id": "iso",
+    "raw": "2025-01-02T03:04:05Z relay.example CEF:0|Ubiquiti|UniFi Network|1.0.0|admin|Admin Accessed|3|src=192.0.2.10 suser=example-admin UNIFIhost=gateway.example",
+    "fields": {
+      "event.dataset": "unifi.network",
+      "observer.product": "UniFi Network",
+      "observer.name": "gateway.example",
+      "user.name": "example-admin",
+      "source.ip": "192.0.2.10"
+    },
+    "absent": [],
+    "provenance": "Entirely generated synthetic release fixture; no captured user event.",
+    "envelope": {
+      "Vendor.Syslog.hostname": "relay.example",
+      "_payload": "CEF:0|Ubiquiti|UniFi Network|1.0.0|admin|Admin Accessed|3|src=192.0.2.10 suser=example-admin UNIFIhost=gateway.example"
+    }
+  },
+  {
+    "id": "double",
+    "raw": "Jan  2 03:04:05 2025-01-02T03:04:05Z relay.example CEF:0|Ubiquiti|UniFi Network|1.0.0|admin|Admin Accessed|3|src=192.0.2.10 suser=example-admin UNIFIhost=gateway.example",
+    "fields": {
+      "event.dataset": "unifi.network",
+      "observer.product": "UniFi Network",
+      "observer.name": "gateway.example",
+      "user.name": "example-admin",
+      "source.ip": "192.0.2.10"
+    },
+    "absent": [],
+    "provenance": "Entirely generated synthetic release fixture; no captured user event.",
+    "envelope": {
+      "Vendor.Syslog.hostname": "relay.example",
+      "_payload": "CEF:0|Ubiquiti|UniFi Network|1.0.0|admin|Admin Accessed|3|src=192.0.2.10 suser=example-admin UNIFIhost=gateway.example"
+    }
+  },
+  {
+    "id": "rfc3164-day",
+    "raw": "Jan 12 03:04:05 relay.example CEF:0|Ubiquiti|UniFi Network|1.0.0|admin|Admin Accessed|3|src=192.0.2.10 suser=example-admin UNIFIhost=gateway.example",
+    "fields": {
+      "event.dataset": "unifi.network",
+      "observer.product": "UniFi Network",
+      "observer.name": "gateway.example",
+      "user.name": "example-admin",
+      "source.ip": "192.0.2.10"
+    },
+    "absent": [],
+    "provenance": "Entirely generated synthetic release fixture; no captured user event.",
+    "envelope": {
+      "Vendor.Syslog.hostname": "relay.example",
+      "_payload": "CEF:0|Ubiquiti|UniFi Network|1.0.0|admin|Admin Accessed|3|src=192.0.2.10 suser=example-admin UNIFIhost=gateway.example"
+    }
+  },
+  {
+    "id": "rfc3164-no-priority",
+    "raw": "Jan  2 03:04:05 relay.example CEF:0|Ubiquiti|UniFi Network|1.0.0|admin|Admin Accessed|3|src=192.0.2.10 suser=example-admin UNIFIhost=gateway.example",
+    "fields": {
+      "event.dataset": "unifi.network",
+      "observer.product": "UniFi Network",
+      "observer.name": "gateway.example",
+      "user.name": "example-admin",
+      "source.ip": "192.0.2.10"
+    },
+    "absent": [],
+    "provenance": "Entirely generated synthetic release fixture; no captured user event.",
+    "envelope": {
+      "Vendor.Syslog.hostname": "relay.example",
+      "_payload": "CEF:0|Ubiquiti|UniFi Network|1.0.0|admin|Admin Accessed|3|src=192.0.2.10 suser=example-admin UNIFIhost=gateway.example"
+    }
+  },
+  {
+    "id": "rfc5424-two-blocks",
+    "raw": "<134>1 2025-01-02T03:04:05Z relay.example app 123 ID1 [example@123 key=\"sample\"][other@123 key=\"demo\"] CEF:0|Ubiquiti|UniFi Network|1.0.0|admin|Admin Accessed|3|src=192.0.2.10 suser=example-admin UNIFIhost=gateway.example",
+    "fields": {
+      "event.dataset": "unifi.network",
+      "observer.product": "UniFi Network",
+      "observer.name": "gateway.example",
+      "user.name": "example-admin",
+      "source.ip": "192.0.2.10"
+    },
+    "absent": [],
+    "provenance": "Entirely generated synthetic release fixture; no captured user event.",
+    "envelope": {
+      "Vendor.Syslog.hostname": "relay.example",
+      "_payload": "CEF:0|Ubiquiti|UniFi Network|1.0.0|admin|Admin Accessed|3|src=192.0.2.10 suser=example-admin UNIFIhost=gateway.example"
+    }
+  },
+  {
+    "id": "intrusion-severity-0",
+    "raw": "CEF:0|Ubiquiti|UniFi Network|1.0.0|ids|Intrusion Detected|0|src=192.0.2.20 dst=198.51.100.30 UNIFIsubCategory=ids",
+    "fields": {
+      "event.dataset": "unifi.network",
+      "event.kind": "alert",
+      "event.severity": "10",
+      "source.ip": "192.0.2.20",
+      "destination.ip": "198.51.100.30"
+    },
+    "absent": [],
+    "provenance": "Entirely generated synthetic release fixture; no captured user event."
+  },
+  {
+    "id": "intrusion-severity-1",
+    "raw": "CEF:0|Ubiquiti|UniFi Network|1.0.0|ids|Intrusion Detected|1|src=192.0.2.20 dst=198.51.100.30 UNIFIsubCategory=ids",
+    "fields": {
+      "event.dataset": "unifi.network",
+      "event.kind": "alert",
+      "event.severity": "10",
+      "source.ip": "192.0.2.20",
+      "destination.ip": "198.51.100.30"
+    },
+    "absent": [],
+    "provenance": "Entirely generated synthetic release fixture; no captured user event."
+  },
+  {
+    "id": "intrusion-severity-2",
+    "raw": "CEF:0|Ubiquiti|UniFi Network|1.0.0|ids|Intrusion Detected|2|src=192.0.2.20 dst=198.51.100.30 UNIFIsubCategory=ids",
+    "fields": {
+      "event.dataset": "unifi.network",
+      "event.kind": "alert",
+      "event.severity": "30",
+      "source.ip": "192.0.2.20",
+      "destination.ip": "198.51.100.30"
+    },
+    "absent": [],
+    "provenance": "Entirely generated synthetic release fixture; no captured user event."
+  },
+  {
+    "id": "intrusion-severity-3",
+    "raw": "CEF:0|Ubiquiti|UniFi Network|1.0.0|ids|Intrusion Detected|3|src=192.0.2.20 dst=198.51.100.30 UNIFIsubCategory=ids",
+    "fields": {
+      "event.dataset": "unifi.network",
+      "event.kind": "alert",
+      "event.severity": "30",
+      "source.ip": "192.0.2.20",
+      "destination.ip": "198.51.100.30"
+    },
+    "absent": [],
+    "provenance": "Entirely generated synthetic release fixture; no captured user event."
+  },
+  {
+    "id": "intrusion-severity-4",
+    "raw": "CEF:0|Ubiquiti|UniFi Network|1.0.0|ids|Intrusion Detected|4|src=192.0.2.20 dst=198.51.100.30 UNIFIsubCategory=ids",
+    "fields": {
+      "event.dataset": "unifi.network",
+      "event.kind": "alert",
+      "event.severity": "50",
+      "source.ip": "192.0.2.20",
+      "destination.ip": "198.51.100.30"
+    },
+    "absent": [],
+    "provenance": "Entirely generated synthetic release fixture; no captured user event."
+  },
+  {
+    "id": "intrusion-severity-5",
+    "raw": "CEF:0|Ubiquiti|UniFi Network|1.0.0|ids|Intrusion Detected|5|src=192.0.2.20 dst=198.51.100.30 UNIFIsubCategory=ids",
+    "fields": {
+      "event.dataset": "unifi.network",
+      "event.kind": "alert",
+      "event.severity": "50",
+      "source.ip": "192.0.2.20",
+      "destination.ip": "198.51.100.30"
+    },
+    "absent": [],
+    "provenance": "Entirely generated synthetic release fixture; no captured user event."
+  },
+  {
+    "id": "intrusion-severity-6",
+    "raw": "CEF:0|Ubiquiti|UniFi Network|1.0.0|ids|Intrusion Detected|6|src=192.0.2.20 dst=198.51.100.30 UNIFIsubCategory=ids",
+    "fields": {
+      "event.dataset": "unifi.network",
+      "event.kind": "alert",
+      "event.severity": "50",
+      "source.ip": "192.0.2.20",
+      "destination.ip": "198.51.100.30"
+    },
+    "absent": [],
+    "provenance": "Entirely generated synthetic release fixture; no captured user event."
+  },
+  {
+    "id": "intrusion-severity-7",
+    "raw": "CEF:0|Ubiquiti|UniFi Network|1.0.0|ids|Intrusion Detected|7|src=192.0.2.20 dst=198.51.100.30 UNIFIsubCategory=ids",
+    "fields": {
+      "event.dataset": "unifi.network",
+      "event.kind": "alert",
+      "event.severity": "70",
+      "source.ip": "192.0.2.20",
+      "destination.ip": "198.51.100.30"
+    },
+    "absent": [],
+    "provenance": "Entirely generated synthetic release fixture; no captured user event."
+  },
+  {
+    "id": "intrusion-severity-8",
+    "raw": "CEF:0|Ubiquiti|UniFi Network|1.0.0|ids|Intrusion Detected|8|src=192.0.2.20 dst=198.51.100.30 UNIFIsubCategory=ids",
+    "fields": {
+      "event.dataset": "unifi.network",
+      "event.kind": "alert",
+      "event.severity": "70",
+      "source.ip": "192.0.2.20",
+      "destination.ip": "198.51.100.30"
+    },
+    "absent": [],
+    "provenance": "Entirely generated synthetic release fixture; no captured user event."
+  },
+  {
+    "id": "intrusion-severity-9",
+    "raw": "CEF:0|Ubiquiti|UniFi Network|1.0.0|ids|Intrusion Detected|9|src=192.0.2.20 dst=198.51.100.30 UNIFIsubCategory=ids",
+    "fields": {
+      "event.dataset": "unifi.network",
+      "event.kind": "alert",
+      "event.severity": "90",
+      "source.ip": "192.0.2.20",
+      "destination.ip": "198.51.100.30"
+    },
+    "absent": [],
+    "provenance": "Entirely generated synthetic release fixture; no captured user event."
+  },
+  {
+    "id": "intrusion-severity-10",
+    "raw": "CEF:0|Ubiquiti|UniFi Network|1.0.0|ids|Intrusion Detected|10|src=192.0.2.20 dst=198.51.100.30 UNIFIsubCategory=ids",
+    "fields": {
+      "event.dataset": "unifi.network",
+      "event.kind": "alert",
+      "event.severity": "90",
+      "source.ip": "192.0.2.20",
+      "destination.ip": "198.51.100.30"
+    },
+    "absent": [],
+    "provenance": "Entirely generated synthetic release fixture; no captured user event."
+  },
+  {
+    "id": "unifi.os-login",
+    "raw": "CEF:0|Ubiquiti|UniFi OS|1.0.0|login|Login Failed|3|suser=example-admin src=203.0.113.10",
+    "fields": {
+      "event.dataset": "unifi.os",
+      "event.outcome": "failure",
+      "user.name": "example-admin",
+      "source.ip": "203.0.113.10"
+    },
+    "absent": [],
+    "provenance": "Entirely generated synthetic release fixture; no captured user event."
+  },
+  {
+    "id": "unifi.protect-login",
+    "raw": "CEF:0|Ubiquiti|UniFi Protect|1.0.0|login|Login Failed|3|suser=example-admin src=203.0.113.10",
+    "fields": {
+      "event.dataset": "unifi.protect",
+      "event.outcome": "failure",
+      "user.name": "example-admin",
+      "source.ip": "203.0.113.10"
+    },
+    "absent": [],
+    "provenance": "Entirely generated synthetic release fixture; no captured user event."
+  },
+  {
+    "id": "os-user-sample-sanitized",
+    "raw": "CEF:0|Ubiquiti|UniFi OS|1.0.0|admins|Admin Made Config Changes|3|msg=Example Admin changed Demo setting from one to two. Source IP: 2001:db8::10",
+    "fields": {
+      "event.dataset": "unifi.os",
+      "user.name": "Example Admin",
+      "source.ip": "2001:db8::10",
+      "message": "Example Admin changed Demo setting from one to two. Source IP: 2001:db8::10"
+    },
+    "absent": [],
+    "provenance": "Entirely generated synthetic release fixture; no captured user event."
+  },
+  {
+    "id": "os-config-ipv4",
+    "raw": "CEF:0|Ubiquiti|UniFi OS|1.0.0|admins|Admin Made Config Changes|3|msg=Example Admin changed Demo setting from one to two. Source IP: 192.0.2.40",
+    "fields": {
+      "event.dataset": "unifi.os",
+      "user.name": "Example Admin",
+      "source.ip": "192.0.2.40",
+      "message": "Example Admin changed Demo setting from one to two. Source IP: 192.0.2.40"
+    },
+    "absent": [],
+    "provenance": "Entirely generated synthetic release fixture; no captured user event."
+  },
+  {
+    "id": "os-short-header",
+    "raw": "CEF:0|Ubiquiti|UniFi OS|1.0.0|admins|3|UNIFIhost=console.example",
+    "fields": {
+      "event.dataset": "unifi.os",
+      "Vendor.Cef.header_variant": "short_os",
+      "observer.name": "console.example"
+    },
+    "absent": [],
+    "provenance": "Entirely generated synthetic release fixture; no captured user event."
+  },
+  {
+    "id": "synthetic-ipv6",
+    "raw": "CEF:0|Ubiquiti|UniFi Network|1.0.0|client|Client Connected|3|src=2001:db8::10 dst=2001:db8::20 UNIFIclientHostname=client.example UNIFIclientMac=02:00:00:00:00:01",
+    "fields": {
+      "event.dataset": "unifi.network",
+      "source.ip": "2001:db8::10",
+      "destination.ip": "2001:db8::20",
+      "host.name": "client.example",
+      "host.mac[0]": "02-00-00-00-00-01"
+    },
+    "absent": [],
+    "provenance": "Entirely generated synthetic release fixture; no captured user event."
+  },
+  {
+    "id": "synthetic-test-syslog",
+    "raw": "CEF:0|Ubiquiti|UniFi OS|1.0.0|test|Test Syslog|3|UNIFIhost=console.example",
+    "fields": {
+      "event.dataset": "unifi.os",
+      "event.category[0]": "configuration",
+      "event.type[0]": "info",
+      "observer.name": "console.example"
+    },
+    "absent": [],
+    "provenance": "Entirely generated synthetic release fixture; no captured user event."
+  }
+]
