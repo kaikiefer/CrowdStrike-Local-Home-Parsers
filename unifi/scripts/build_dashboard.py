@@ -111,7 +111,7 @@ def build_scoped(scope):
     dataset = config['dataset']
     base = BASE + ' #event.dataset=' + dataset
     dashboard, _ = build()
-    dashboard.update(name='UniFi — ' + config['name'] + ' Logs',
+    dashboard.update(name='UniFi - ' + config['name'] + ' Logs',
                      description=config['note'], labels=config['labels'])
     template = dashboard['widgets']
     coverage = dict(template['coverage-note'], title=dashboard['name'], text=config['note'])
@@ -163,6 +163,12 @@ def build():
 if __name__ == '__main__':
     import argparse
     import yaml
+
+    class DashboardDumper(yaml.SafeDumper):
+        # Falcon's dashboard importer can reject YAML anchors and aliases.
+        def ignore_aliases(self, data):
+            return True
+
     parser = argparse.ArgumentParser()
     parser.add_argument('--check', action='store_true')
     parser.add_argument('--schema', type=Path, help='Optional local copy of the official dashboard v0.24.0 schema')
@@ -177,7 +183,7 @@ if __name__ == '__main__':
         if args.schema:
             import jsonschema
             jsonschema.validate(dashboard, json.loads(args.schema.read_text()))
-        files[ROOT / 'dashboards' / (filename + '.yaml')] = yaml.safe_dump(dashboard, sort_keys=False, allow_unicode=True)
+        files[ROOT / 'dashboards' / (filename + '.yaml')] = yaml.dump(dashboard, Dumper=DashboardDumper, sort_keys=False, allow_unicode=True)
         files.update({ROOT / 'dashboards' / query_dir / name: query for name, query in queries.items()})
     for path, content in files.items():
         if args.check:
