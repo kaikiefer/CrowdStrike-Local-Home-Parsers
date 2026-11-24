@@ -18,12 +18,14 @@ The table describes code and synthetic examples, not compatibility verified in a
 
 **Not covered:** Other UniFi app exports (such as Access, Talk, and Connect), non-CEF syslog or raw device logs, iptables logs, support bundles, Protect API JSON, and Alarm Manager webhook JSON. An unsupported or malformed record is retained and flagged as a pipeline error rather than normalized as a supported event.
 
-## Contents
-- Import parsers/ubiquiti-unifi.yaml, or use parsers/ubiquiti-unifi.cql in the parser editor.
-- searches/ contains 13 candidate rules and three investigation queries. Review searches/README.md and detection-notes.md before deployment.
-- tests/fixtures.json contains 30 entirely generated synthetic examples. No captured user logs are included. Addresses use RFC 5737/3849 documentation ranges, hosts use .example, and the test MAC is locally administered.
-- scripts/build.py regenerates the import YAML from CQL and fixtures.
-- [UniFi dashboard](dashboards/README.md) documents the import, widget queries and login IOC enrichment.
+## Package layout
+
+Like the Synology package, UniFi keeps its parsers, searches, dashboards, build scripts, and tests in separate folders.
+
+- **Parsers:** [YAML import](parsers/ubiquiti-unifi.yaml) and editable [CQL source](parsers/ubiquiti-unifi.cql).
+- **Searches:** [investigation searches and candidate rules](searches/README.md), with [detection notes](searches/detection-notes.md).
+- **Dashboards:** [System, Network, and combined views](dashboards/README.md). The dashboard folder also includes optional standalone widget queries for tenants without dashboard import.
+- **Build and tests:** [scripts](scripts/) regenerate the imports; [fixtures](tests/fixtures.json) contain synthetic events only.
 
 ## Installation
 Create a custom parser named ubiquiti-unifi in your Falcon/LogScale tenant, import the YAML and run its testCases before production ingestion. CQL compilation and tenant execution are NOT validated by the offline tests. Forward one raw CEF/syslog event per input; JSON wrappers and raw daemon logs require separate parsing.

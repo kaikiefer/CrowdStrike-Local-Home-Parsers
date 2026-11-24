@@ -37,8 +37,11 @@ class DashboardTests(unittest.TestCase):
         self.assertIn('#event.outcome=failure', panels['Failed logins from IOC addresses']['queryString'])
 
     def test_widgets_fit_without_overlap(self):
+        self.assert_widgets_fit(self.dashboard)
+
+    def assert_widgets_fit(self, dashboard):
         occupied = set()
-        for widget in self.dashboard['widgets'].values():
+        for widget in dashboard['widgets'].values():
             self.assertGreater(widget['width'], 0)
             self.assertGreater(widget['height'], 0)
             self.assertGreaterEqual(widget['x'], 0)
@@ -49,6 +52,29 @@ class DashboardTests(unittest.TestCase):
                     self.assertNotIn((x, y), occupied)
                     occupied.add((x, y))
 
+    def test_scoped_artifacts_and_filters(self):
+        for scope, dataset, count in [('system', 'unifi.os', 14), ('network', 'unifi.network', 20)]:
+            with self.subTest(scope=scope):
+                expected, queries = builder.build_scoped(scope)
+                dashboard_dir = ROOT / 'dashboards'
+                actual = yaml.safe_load((dashboard_dir / f'unifi-{scope}-logs.yaml').read_text())
+                self.assertEqual(actual, expected)
+                self.assertEqual(len(queries), count)
+                self.assertEqual(set(queries), {p.name for p in (dashboard_dir / 'queries' / scope).glob('*.cql')})
+                for name, query in queries.items():
+                    self.assertEqual((dashboard_dir / 'queries' / scope / name).read_text(), query)
+                    self.assertTrue(query.startswith(builder.BASE + f' #event.dataset={dataset}\n'))
+                    self.assertEqual(query.count('#event.dataset='), 1)
+                    self.assertNotIn('pipeline_error', query)
+                ids = {k for k, w in actual['widgets'].items() if w['type'] == 'query'}
+                self.assertFalse(ids & self.dashboard['widgets'].keys())
+                titles = {w['title'] for w in actual['widgets'].values()}
+                self.assertIn('Login IOC match details', titles)
+                self.assertNotIn('Protect exported event names', titles)
+                self.assertEqual('Test Syslog events' in titles, scope == 'system')
+                self.assertEqual('Firewall denies' in titles, scope == 'network')
+                self.assert_widgets_fit(actual)
+
     def test_official_schema(self):
         path = os.environ.get('DASHBOARD_SCHEMA')
         if not path:
@@ -56,6 +82,8 @@ class DashboardTests(unittest.TestCase):
         import jsonschema
         schema = json.loads(Path(path).read_text())
         jsonschema.validate(self.dashboard, schema)
+        for scope in builder.SCOPED:
+            jsonschema.validate(builder.build_scoped(scope)[0], schema)
 
 
 if __name__ == '__main__':
