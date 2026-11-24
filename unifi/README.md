@@ -23,7 +23,7 @@ The table describes code and synthetic examples, not compatibility verified in a
 - searches/ contains 13 candidate rules and three investigation queries. Review searches/README.md and detection-notes.md before deployment.
 - tests/fixtures.json contains 30 entirely generated synthetic examples. No captured user logs are included. Addresses use RFC 5737/3849 documentation ranges, hosts use .example, and the test MAC is locally administered.
 - scripts/build.py regenerates the import YAML from CQL and fixtures.
-- [UniFi dashboard](dashboards/README.md) documents the import, widget queries and login IOC enrichment.
+- [UniFi dashboards](dashboards/README.md) provide separate System and Network views plus a combined overview, with import instructions, widget queries and login IOC enrichment.
 
 ## Installation
 Create a custom parser named ubiquiti-unifi in your Falcon/LogScale tenant, import the YAML and run its testCases before production ingestion. CQL compilation and tenant execution are NOT validated by the offline tests. Forward one raw CEF/syslog event per input; JSON wrappers and raw daemon logs require separate parsing.
