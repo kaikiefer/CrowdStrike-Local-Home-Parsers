@@ -1,17 +1,25 @@
-# UniFi Security and Operations dashboard
+# UniFi dashboards for Falcon Next-Gen SIEM / LogScale
 
-Import `unifi-security-operations.yaml` into the Falcon Next-Gen SIEM / LogScale repository or view receiving events from this project's UniFi CEF parser. It contains 24 query widgets and a coverage note. All widgets use a shared, non-live 24-hour interval by default. Select a longer interval for sparse event sources.
+Choose the dashboard that matches the UniFi CEF feed or overview you want. All three can be imported side by side into the Third Party view receiving parsed UniFi events. They share a 24-hour default interval.
+
+| Dashboard | Feed | Main panels |
+| --- | --- | --- |
+| [UniFi System Logs](unifi-system-logs.yaml) | UniFi OS console, `#event.dataset=unifi.os` | Admin changes, authentication, login IOC matches, Test Syslog, and recent console events |
+| [UniFi Network Logs](unifi-network-logs.yaml) | UniFi Network app, `#event.dataset=unifi.network` | IDS/IPS, firewall decisions, client events, authentication, and login IOC matches |
+| [UniFi Security and Operations](unifi-security-operations.yaml) | Combined: OS, Network, and Protect | Cross-app overview, Protect event inventory, and parser errors even when no dataset can be determined |
+
+The combined dashboard is unchanged. The individual dashboards exclude Protect and unclassified parser errors on purpose. They filter by the **CEF product after parsing**, not by destination port or the label of the UniFi export setting. Plain syslog and NetFlow/IPFIX are not covered.
 
 ## Import
 
 1. Confirm `#Vendor=ubiquiti #event.module=unifi | count()` returns events in the intended repository or view.
-2. Open Dashboards, select the option to import a dashboard, and upload `unifi-security-operations.yaml`. Navigation depends on the tenant version.
-3. Run the dashboard and inspect each widget for query errors. Confirm representative records in search for alerts, firewall decisions, authentication and configuration changes.
-4. Check Parser status and Timestamp sources. Investigate `pipeline_error` records and unexpected collector-time fallback.
+2. Open Dashboards, select Import, and upload the YAML for each dashboard you want. Navigation depends on the tenant version. For a scoped dashboard, verify that the matching dataset from the table above returns events.
+3. Run the dashboard and inspect each widget for query errors. Verify representative OS admin or Test Syslog events and Network client, firewall or IDS/IPS events as appropriate.
+4. Check Parser status in the combined dashboard and Timestamp sources in any dashboard. Investigate `pipeline_error` records and unexpected collector-time fallback.
 
-If dashboard import is unavailable in your tenant, use the standalone CQL files in `queries/` to create the equivalent widgets manually. Each filename matches its panel title. Run the offline build below to generate the import file. Verify all queries and representative results in your own tenant before operational use.
+If dashboard import is unavailable in your tenant, use the standalone CQL files in `queries/system/`, `queries/network/` or the top level of `queries/` for the combined dashboard to create the equivalent widgets manually. Each filename matches its panel title. Run the offline build below to generate the import file. Verify all queries and representative results in your own tenant before operational use.
 
-## Panels and interpretation
+## Combined panels and interpretation
 
 | Area | Panels |
 | --- | --- |
@@ -49,4 +57,4 @@ References: [dashboard import](https://library.humio.com/logscale-gdo/dashboards
 
 Three panels match completed successful and failed login records by `source.ip` using `ioc:lookup()` with a high confidence threshold and `strict=true`. Counts are login records before splitting; the details table splits the IOC array to show individual indicator matches and labels. Logout records are excluded. Matches use current CrowdStrike intelligence at search time and do not establish compromise. Private, masked or relay source addresses can prevent useful matches. Zero results can mean no login events, no matching indicators or limited intelligence coverage; it is not proof that all logins are safe. No alerts or blocking actions are installed.
 
-Import into the Third Party view containing your UniFi connection. The template includes labels UniFi, Network, Protect, Security and CrowdStrike IOC. Its native table widgets use `table`, with time charts and single-value counters for their respective result shapes.
+Import into the Third Party view containing your UniFi connection. Each dashboard is labeled for its scope and includes a CrowdStrike IOC label. Its native table widgets use `table`, with time charts and single-value counters for their respective result shapes.

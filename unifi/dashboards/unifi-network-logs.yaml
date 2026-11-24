@@ -1,0 +1,475 @@
+name: UniFi — Network Logs
+description: UniFi Network app CEF only. Counts describe received events, not flows,
+  total traffic or active clients. Unclassified parser errors are in the combined
+  overview.
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 1d
+labels:
+- UniFi
+- Network
+- Security
+- CrowdStrike IOC
+widgets:
+  coverage-note:
+    type: note
+    title: UniFi — Network Logs
+    text: UniFi Network app CEF only. Counts describe received events, not flows,
+      total traffic or active clients. Unclassified parser errors are in the combined
+      overview.
+    x: 0
+    y: 0
+    width: 12
+    height: 2
+  4bb13082-3a5c-54f3-b56c-6a3444403549:
+    type: query
+    title: Events received
+    queryString: '#Vendor=ubiquiti #event.module=unifi #event.dataset=unifi.network
+
+      | count(as=events)
+
+      '
+    visualization: single-value
+    x: 0
+    y: 2
+    width: 3
+    height: 2
+    start: 1d
+    end: now
+    isLive: false
+    options: &id001
+      default: {}
+      value-format: raw
+      decimal-places: 0
+  075edad5-8043-590b-b336-6c3593f1096c:
+    type: query
+    title: Network intrusion alerts
+    queryString: '#Vendor=ubiquiti #event.module=unifi #event.dataset=unifi.network
+
+      #event.kind=alert
+
+      | count(as=events)
+
+      '
+    visualization: single-value
+    x: 3
+    y: 2
+    width: 3
+    height: 2
+    start: 1d
+    end: now
+    isLive: false
+    options:
+      default: {}
+      value-format: raw
+      decimal-places: 0
+  98b2d5e3-791a-5ffa-a4b7-9357d4ba64af:
+    type: query
+    title: Firewall denies
+    queryString: '#Vendor=ubiquiti #event.module=unifi #event.dataset=unifi.network
+
+      observer.type=firewall event.type[0]=denied
+
+      | count(as=events)
+
+      '
+    visualization: single-value
+    x: 6
+    y: 2
+    width: 3
+    height: 2
+    start: 1d
+    end: now
+    isLive: false
+    options: *id001
+  feec079a-5fd5-5964-8adf-304ed594b7f7:
+    type: query
+    title: Failed authentications
+    queryString: '#Vendor=ubiquiti #event.module=unifi #event.dataset=unifi.network
+
+      event.category[0]=authentication #event.outcome=failure
+
+      | count(as=events)
+
+      '
+    visualization: single-value
+    x: 9
+    y: 2
+    width: 3
+    height: 2
+    start: 1d
+    end: now
+    isLive: false
+    options:
+      default: {}
+      value-format: raw
+      decimal-places: 0
+  4b0f697b-4fce-578f-bc63-e2945b4c1f80:
+    type: query
+    title: Intrusion alerts by severity
+    queryString: '#Vendor=ubiquiti #event.module=unifi #event.dataset=unifi.network
+
+      #event.kind=alert
+
+      | timeChart(event.severity, function=count(), limit=10)
+
+      '
+    visualization: time-chart
+    x: 0
+    y: 4
+    width: 6
+    height: 4
+    start: 1d
+    end: now
+    isLive: false
+    options:
+      series: {}
+      plotType: line
+      connect-points: false
+      imputation: none
+  e6f25936-4188-573c-a363-aeb85dadeba4:
+    type: query
+    title: Intrusion signatures
+    queryString: '#Vendor=ubiquiti #event.module=unifi #event.dataset=unifi.network
+
+      #event.kind=alert
+
+      | groupBy([Vendor.Cef.name, event.severity], function=count(as=events), limit=1000)
+      | sort(events, order=desc, limit=20)
+
+      '
+    visualization: table
+    x: 6
+    y: 4
+    width: 6
+    height: 4
+    start: 1d
+    end: now
+    isLive: false
+    options:
+      cell-overflow: wrap-text
+      row-numbers-enabled: false
+  7addf436-e8bd-5133-9538-d2439d396536:
+    type: query
+    title: Intrusion source addresses
+    queryString: '#Vendor=ubiquiti #event.module=unifi #event.dataset=unifi.network
+
+      #event.kind=alert source.ip=*
+
+      | top([source.ip], limit=20)
+
+      '
+    visualization: table
+    x: 0
+    y: 8
+    width: 6
+    height: 4
+    start: 1d
+    end: now
+    isLive: false
+    options:
+      cell-overflow: wrap-text
+      row-numbers-enabled: false
+  c6ba6df4-b2e4-52df-b051-6716dcb16020:
+    type: query
+    title: Intrusion destinations and ports
+    queryString: '#Vendor=ubiquiti #event.module=unifi #event.dataset=unifi.network
+
+      #event.kind=alert destination.ip=*
+
+      | groupBy([destination.ip, destination.port, network.transport], function=count(as=events),
+      limit=1000) | sort(events, order=desc, limit=20)
+
+      '
+    visualization: table
+    x: 6
+    y: 8
+    width: 6
+    height: 4
+    start: 1d
+    end: now
+    isLive: false
+    options:
+      cell-overflow: wrap-text
+      row-numbers-enabled: false
+  7f10d0be-a1da-5166-9272-23d8ccb0eb97:
+    type: query
+    title: Firewall decisions over time
+    queryString: '#Vendor=ubiquiti #event.module=unifi #event.dataset=unifi.network
+
+      observer.type=firewall
+
+      | timeChart("event.type[0]", function=count(), limit=10)
+
+      '
+    visualization: time-chart
+    x: 0
+    y: 12
+    width: 6
+    height: 4
+    start: 1d
+    end: now
+    isLive: false
+    options:
+      series: {}
+      plotType: line
+      connect-points: false
+      imputation: none
+  634acb9c-4ada-5680-8a84-3fe291ae886a:
+    type: query
+    title: Firewall denied destinations
+    queryString: '#Vendor=ubiquiti #event.module=unifi #event.dataset=unifi.network
+
+      observer.type=firewall event.type[0]=denied destination.ip=*
+
+      | groupBy([destination.ip, destination.port], function=count(as=events), limit=1000)
+      | sort(events, order=desc, limit=20)
+
+      '
+    visualization: table
+    x: 6
+    y: 12
+    width: 6
+    height: 4
+    start: 1d
+    end: now
+    isLive: false
+    options:
+      cell-overflow: wrap-text
+      row-numbers-enabled: false
+  e270f7c1-7aa8-5203-a2f4-92c56f52e17f:
+    type: query
+    title: Client connection activity
+    queryString: '#Vendor=ubiquiti #event.module=unifi #event.dataset=unifi.network
+
+      Vendor.Cef.name=/(?i)(?:client connected|client disconnected|client roamed)/
+
+      | timeChart(Vendor.Cef.name, function=count(), limit=20)
+
+      '
+    visualization: time-chart
+    x: 0
+    y: 16
+    width: 6
+    height: 4
+    start: 1d
+    end: now
+    isLive: false
+    options:
+      series: {}
+      plotType: line
+      connect-points: false
+      imputation: none
+  7b847abc-e42e-5636-99b8-1de9bad83ce3:
+    type: query
+    title: Reporting consoles
+    queryString: '#Vendor=ubiquiti #event.module=unifi #event.dataset=unifi.network
+
+      observer.name=*
+
+      | groupBy([observer.name, #event.dataset], function=[count(as=events), max(@timestamp,
+      as=lastSeen)], limit=1000) | sort(lastSeen, order=desc, limit=100)
+
+      '
+    visualization: table
+    x: 6
+    y: 16
+    width: 6
+    height: 4
+    start: 1d
+    end: now
+    isLive: false
+    options:
+      cell-overflow: wrap-text
+      row-numbers-enabled: false
+  976bb13a-c281-5eb5-bc26-3bb2708a9867:
+    type: query
+    title: Authentication outcomes
+    queryString: '#Vendor=ubiquiti #event.module=unifi #event.dataset=unifi.network
+
+      event.category[0]=authentication
+
+      | timeChart(#event.outcome, function=count(), limit=10)
+
+      '
+    visualization: time-chart
+    x: 0
+    y: 20
+    width: 6
+    height: 4
+    start: 1d
+    end: now
+    isLive: false
+    options:
+      series: {}
+      plotType: line
+      connect-points: false
+      imputation: none
+  346a8754-aac5-5311-9159-4cb95dd6fe63:
+    type: query
+    title: Failed authentication sources
+    queryString: '#Vendor=ubiquiti #event.module=unifi #event.dataset=unifi.network
+
+      event.category[0]=authentication #event.outcome=failure source.ip=*
+
+      | top([source.ip], limit=20)
+
+      '
+    visualization: table
+    x: 6
+    y: 20
+    width: 6
+    height: 4
+    start: 1d
+    end: now
+    isLive: false
+    options:
+      cell-overflow: wrap-text
+      row-numbers-enabled: false
+  d2c4830a-64e7-541b-b17e-3a44d8b5aa68:
+    type: query
+    title: Recent authentication activity
+    queryString: '#Vendor=ubiquiti #event.module=unifi #event.dataset=unifi.network
+
+      event.category[0]=authentication
+
+      | sort(@timestamp, order=desc, limit=100) | table([@timestamp, #event.dataset,
+      observer.name, user.name, source.ip, event.action, #event.outcome], limit=100)
+
+      '
+    visualization: table
+    x: 0
+    y: 24
+    width: 6
+    height: 5
+    start: 1d
+    end: now
+    isLive: false
+    options:
+      cell-overflow: wrap-text
+      row-numbers-enabled: false
+  846fffd6-f5f3-544d-b636-93d69fe493a3:
+    type: query
+    title: Recent configuration changes
+    queryString: '#Vendor=ubiquiti #event.module=unifi #event.dataset=unifi.network
+
+      event.category[0]=configuration event.type[0]=change
+
+      | sort(@timestamp, order=desc, limit=100) | table([@timestamp, observer.name,
+      user.name, source.ip, event.action, message], limit=100)
+
+      '
+    visualization: table
+    x: 6
+    y: 24
+    width: 6
+    height: 5
+    start: 1d
+    end: now
+    isLive: false
+    options:
+      cell-overflow: wrap-text
+      row-numbers-enabled: false
+  4488c125-9a3b-5182-b428-ac912011e120:
+    type: query
+    title: Successful logins from IOC addresses
+    queryString: '#Vendor=ubiquiti #event.module=unifi #event.dataset=unifi.network
+
+      event.category[0]=authentication Parser.status=parsed Vendor.Cef.name=/(?i)(?:login
+      failed|failed login|failed to log in|authentication failed|admin access failed|admin
+      accessed|logged in|login successful)/ Vendor.Cef.name!=/(?i)(?:logged out|logout)/
+      source.ip=* #event.outcome=success
+
+      | ioc:lookup(field=source.ip, type="ip_address", confidenceThreshold="high",
+      strict=true) | count(as=Logins)
+
+      '
+    visualization: single-value
+    x: 0
+    y: 29
+    width: 6
+    height: 2
+    start: 1d
+    end: now
+    isLive: false
+    options:
+      default: {}
+      value-format: raw
+      decimal-places: 0
+  140dd0ba-cce1-5dbf-84d7-14b8894c7f63:
+    type: query
+    title: Failed logins from IOC addresses
+    queryString: '#Vendor=ubiquiti #event.module=unifi #event.dataset=unifi.network
+
+      event.category[0]=authentication Parser.status=parsed Vendor.Cef.name=/(?i)(?:login
+      failed|failed login|failed to log in|authentication failed|admin access failed|admin
+      accessed|logged in|login successful)/ Vendor.Cef.name!=/(?i)(?:logged out|logout)/
+      source.ip=* #event.outcome=failure
+
+      | ioc:lookup(field=source.ip, type="ip_address", confidenceThreshold="high",
+      strict=true) | count(as=Failures)
+
+      '
+    visualization: single-value
+    x: 6
+    y: 29
+    width: 6
+    height: 2
+    start: 1d
+    end: now
+    isLive: false
+    options:
+      default: {}
+      value-format: raw
+      decimal-places: 0
+  145e2c28-31dc-52fa-bd95-ef169abc250a:
+    type: query
+    title: Login IOC match details
+    queryString: '#Vendor=ubiquiti #event.module=unifi #event.dataset=unifi.network
+
+      event.category[0]=authentication Parser.status=parsed Vendor.Cef.name=/(?i)(?:login
+      failed|failed login|failed to log in|authentication failed|admin access failed|admin
+      accessed|logged in|login successful)/ Vendor.Cef.name!=/(?i)(?:logged out|logout)/
+      source.ip=*
+
+      | ioc:lookup(field=source.ip, type="ip_address", confidenceThreshold="high",
+      strict=true) | split(ioc) | sort(@timestamp, order=desc, limit=200) | table([@timestamp,
+      observer.name, user.name, source.ip, #event.outcome, Vendor.Cef.name, ioc.indicator,
+      ioc.malicious_confidence, ioc.labels], limit=200)
+
+      '
+    visualization: table
+    x: 0
+    y: 31
+    width: 12
+    height: 5
+    start: 1d
+    end: now
+    isLive: false
+    options:
+      cell-overflow: wrap-text
+      row-numbers-enabled: false
+  bc31fc1e-eb63-5ef2-bc2b-a8fead6bfafd:
+    type: query
+    title: Timestamp sources
+    queryString: '#Vendor=ubiquiti #event.module=unifi #event.dataset=unifi.network
+
+      | groupBy([Parser.timestamp_source], function=count(as=events), limit=20) |
+      sort(events, order=desc)
+
+      '
+    visualization: table
+    x: 0
+    y: 36
+    width: 12
+    height: 4
+    start: 1d
+    end: now
+    isLive: false
+    options:
+      cell-overflow: wrap-text
+      row-numbers-enabled: false
+$schema: https://schemas.humio.com/dashboard/v0.24.0
