@@ -46,6 +46,94 @@ PANELS.extend([
 ])
 
 
+# Keep the combined dashboard stable while providing narrower views of known
+# datasets. Unclassified pipeline errors can only be shown in the overview.
+SCOPED = {
+    'system': {
+        'dataset': 'unifi.os', 'name': 'System',
+        'note': 'UniFi OS console CEF only. Shows admin activity, authentication and export checks. Unclassified parser errors are in the combined overview.',
+        'labels': ['UniFi', 'System', 'Security', 'CrowdStrike IOC'],
+        'panels': [
+            ('Events received', 0, 2, 3, 2),
+            ('Failed authentications', 3, 2, 3, 2),
+            ('Configuration changes', 6, 2, 3, 2),
+            ('Test Syslog events', 9, 2, 3, 2),
+            ('Authentication outcomes', 0, 4, 6, 4),
+            ('Failed authentication sources', 6, 4, 6, 4),
+            ('Recent authentication activity', 0, 8, 6, 5),
+            ('Recent configuration changes', 6, 8, 6, 5),
+            ('Successful logins from IOC addresses', 0, 13, 6, 2),
+            ('Failed logins from IOC addresses', 6, 13, 6, 2),
+            ('Login IOC match details', 0, 15, 12, 5),
+            ('Reporting consoles', 0, 20, 6, 4),
+            ('Timestamp sources', 6, 20, 6, 4),
+            ('Recent system events', 0, 24, 12, 5),
+        ],
+    },
+    'network': {
+        'dataset': 'unifi.network', 'name': 'Network',
+        'note': 'UniFi Network app CEF only. Counts describe received events, not flows, total traffic or active clients. Unclassified parser errors are in the combined overview.',
+        'labels': ['UniFi', 'Network', 'Security', 'CrowdStrike IOC'],
+        'panels': [
+            ('Events received', 0, 2, 3, 2),
+            ('Network intrusion alerts', 3, 2, 3, 2),
+            ('Firewall denies', 6, 2, 3, 2),
+            ('Failed authentications', 9, 2, 3, 2),
+            ('Intrusion alerts by severity', 0, 4, 6, 4),
+            ('Intrusion signatures', 6, 4, 6, 4),
+            ('Intrusion source addresses', 0, 8, 6, 4),
+            ('Intrusion destinations and ports', 6, 8, 6, 4),
+            ('Firewall decisions over time', 0, 12, 6, 4),
+            ('Firewall denied destinations', 6, 12, 6, 4),
+            ('Client connection activity', 0, 16, 6, 4),
+            ('Reporting consoles', 6, 16, 6, 4),
+            ('Authentication outcomes', 0, 20, 6, 4),
+            ('Failed authentication sources', 6, 20, 6, 4),
+            ('Recent authentication activity', 0, 24, 6, 5),
+            ('Recent configuration changes', 6, 24, 6, 5),
+            ('Successful logins from IOC addresses', 0, 29, 6, 2),
+            ('Failed logins from IOC addresses', 6, 29, 6, 2),
+            ('Login IOC match details', 0, 31, 12, 5),
+            ('Timestamp sources', 0, 36, 12, 4),
+        ],
+    },
+}
+SCOPED_PANELS = {
+    'Configuration changes': (CHANGE, 'count(as=events)', 'single-value'),
+    'Test Syslog events': ('Vendor.Cef.name="Test Syslog"', 'count(as=events)', 'single-value'),
+    'Firewall denies': (DENIED, 'count(as=events)', 'single-value'),
+    'Recent system events': ('', 'sort(@timestamp, order=desc, limit=100) | table([@timestamp, observer.name, event.code, event.action, user.name, source.ip, message], limit=100)', 'table'),
+}
+
+
+def build_scoped(scope):
+    config = SCOPED[scope]
+    dataset = config['dataset']
+    base = BASE + ' #event.dataset=' + dataset
+    dashboard, _ = build()
+    dashboard.update(name='UniFi — ' + config['name'] + ' Logs',
+                     description=config['note'], labels=config['labels'])
+    template = dashboard['widgets']
+    coverage = dict(template['coverage-note'], title=dashboard['name'], text=config['note'])
+    widgets = {'coverage-note': coverage}
+    by_title = {widget['title']: widget for widget in template.values() if widget['type'] == 'query'}
+    panel_specs = {title: (filt, agg, vis) for title, filt, agg, vis, *_ in PANELS} | SCOPED_PANELS
+    queries = {}
+    for index, (title, x, y, width, height) in enumerate(config['panels'], 1):
+        filt, agg, vis = panel_specs[title]
+        # Drop an identical filter inherited from the combined dashboard.
+        filt = filt.removeprefix('#event.dataset=' + dataset + ' ')
+        query = base + ('\n' + filt if filt else '') + '\n| ' + agg + '\n'
+        style = by_title.get(title, by_title['Events received' if vis == 'single-value'
+                                             else 'Recent authentication activity'])
+        key = str(uuid.uuid5(uuid.NAMESPACE_URL, f'crowdstrike-local-home-parsers/unifi/dashboard/{scope}/{title}'))
+        widgets[key] = dict(style, title=title, queryString=query, x=x, y=y, width=width, height=height)
+        slug = '-'.join(title.lower().split())
+        queries[f'{index:02d}-{slug}.cql'] = query
+    dashboard['widgets'] = widgets
+    return dashboard, queries
+
+
 def build():
     widgets = {'coverage-note': {
         'type': 'note', 'title': 'UniFi security and operations',
@@ -79,12 +167,18 @@ if __name__ == '__main__':
     parser.add_argument('--check', action='store_true')
     parser.add_argument('--schema', type=Path, help='Optional local copy of the official dashboard v0.24.0 schema')
     args = parser.parse_args()
-    dashboard, queries = build()
-    if args.schema:
-        import jsonschema
-        jsonschema.validate(dashboard, json.loads(args.schema.read_text()))
-    files = {ROOT / 'dashboards/unifi-security-operations.yaml': yaml.safe_dump(dashboard, sort_keys=False, allow_unicode=True)}
-    files.update({ROOT / 'dashboards/queries' / name: query for name, query in queries.items()})
+    combined, combined_queries = build()
+    artifacts = [('unifi-security-operations', 'queries', combined, combined_queries)]
+    for scope in SCOPED:
+        dashboard, queries = build_scoped(scope)
+        artifacts.append((f'unifi-{scope}-logs', f'queries/{scope}', dashboard, queries))
+    files = {}
+    for filename, query_dir, dashboard, queries in artifacts:
+        if args.schema:
+            import jsonschema
+            jsonschema.validate(dashboard, json.loads(args.schema.read_text()))
+        files[ROOT / 'dashboards' / (filename + '.yaml')] = yaml.safe_dump(dashboard, sort_keys=False, allow_unicode=True)
+        files.update({ROOT / 'dashboards' / query_dir / name: query for name, query in queries.items()})
     for path, content in files.items():
         if args.check:
             if not path.exists() or path.read_text() != content:
@@ -92,4 +186,4 @@ if __name__ == '__main__':
         else:
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(content)
-    print(f'{"Checked" if args.check else "Built"} dashboard and {len(queries)} widget queries')
+    print(f'{"Checked" if args.check else "Built"} dashboards and {sum(len(queries) for _, _, _, queries in artifacts)} widget queries')
