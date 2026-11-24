@@ -1,4 +1,4 @@
-name: UniFi — System Logs
+name: UniFi - System Logs
 description: UniFi OS console CEF only. Shows admin activity, authentication and export
   checks. Unclassified parser errors are in the combined overview.
 updateFrequency: never
@@ -15,7 +15,7 @@ labels:
 widgets:
   coverage-note:
     type: note
-    title: UniFi — System Logs
+    title: UniFi - System Logs
     text: UniFi OS console CEF only. Shows admin activity, authentication and export
       checks. Unclassified parser errors are in the combined overview.
     x: 0
@@ -38,7 +38,7 @@ widgets:
     start: 1d
     end: now
     isLive: false
-    options: &id001
+    options:
       default: {}
       value-format: raw
       decimal-places: 0
@@ -82,7 +82,10 @@ widgets:
     start: 1d
     end: now
     isLive: false
-    options: *id001
+    options:
+      default: {}
+      value-format: raw
+      decimal-places: 0
   2fe1b071-c88c-5cdd-b393-75d008e13d2b:
     type: query
     title: Test Syslog events
@@ -101,7 +104,10 @@ widgets:
     start: 1d
     end: now
     isLive: false
-    options: *id001
+    options:
+      default: {}
+      value-format: raw
+      decimal-places: 0
   b7477a30-bac3-5874-b1d4-b0f2c0576ce8:
     type: query
     title: Authentication outcomes
@@ -165,7 +171,7 @@ widgets:
     start: 1d
     end: now
     isLive: false
-    options: &id002
+    options:
       cell-overflow: wrap-text
       row-numbers-enabled: false
   be82866f-c677-55f7-bdf0-a100cf3b5a1c:
@@ -328,5 +334,7 @@ widgets:
     start: 1d
     end: now
     isLive: false
-    options: *id002
+    options:
+      cell-overflow: wrap-text
+      row-numbers-enabled: false
 $schema: https://schemas.humio.com/dashboard/v0.24.0

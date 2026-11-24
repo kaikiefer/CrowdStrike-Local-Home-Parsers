@@ -57,7 +57,11 @@ class DashboardTests(unittest.TestCase):
             with self.subTest(scope=scope):
                 expected, queries = builder.build_scoped(scope)
                 dashboard_dir = ROOT / 'dashboards'
-                actual = yaml.safe_load((dashboard_dir / f'unifi-{scope}-logs.yaml').read_text())
+                raw = (dashboard_dir / f'unifi-{scope}-logs.yaml').read_text()
+                self.assertFalse(any(isinstance(token, (yaml.tokens.AnchorToken, yaml.tokens.AliasToken))
+                                     for token in yaml.scan(raw)))
+                actual = yaml.safe_load(raw)
+                self.assertEqual(actual['name'], f'UniFi - {scope.title()} Logs')
                 self.assertEqual(actual, expected)
                 self.assertEqual(len(queries), count)
                 self.assertEqual(set(queries), {p.name for p in (dashboard_dir / 'queries' / scope).glob('*.cql')})

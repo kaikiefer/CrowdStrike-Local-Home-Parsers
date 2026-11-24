@@ -1,4 +1,4 @@
-name: UniFi — Network Logs
+name: UniFi - Network Logs
 description: UniFi Network app CEF only. Counts describe received events, not flows,
   total traffic or active clients. Unclassified parser errors are in the combined
   overview.
@@ -16,7 +16,7 @@ labels:
 widgets:
   coverage-note:
     type: note
-    title: UniFi — Network Logs
+    title: UniFi - Network Logs
     text: UniFi Network app CEF only. Counts describe received events, not flows,
       total traffic or active clients. Unclassified parser errors are in the combined
       overview.
@@ -40,7 +40,7 @@ widgets:
     start: 1d
     end: now
     isLive: false
-    options: &id001
+    options:
       default: {}
       value-format: raw
       decimal-places: 0
@@ -84,7 +84,10 @@ widgets:
     start: 1d
     end: now
     isLive: false
-    options: *id001
+    options:
+      default: {}
+      value-format: raw
+      decimal-places: 0
   feec079a-5fd5-5964-8adf-304ed594b7f7:
     type: query
     title: Failed authentications
